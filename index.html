@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👀 AFK Site </title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --accent: #ffffff; --bg-dark: #000000; --card-bg: #0a0a0a; }
+        body { background-color: var(--bg-dark); color: #ffffff; font-family: 'Anuphan', sans-serif; overflow-x: hidden; }
+        .bg-mesh { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% -20%, #1a1a1a 0%, #000000 80%); z-index: -1; }
+        
+        .premium-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .premium-card:hover { border-color: rgba(255, 255, 255, 0.2); }
+        
+        .progress-container { background: #111; height: 10px; border-radius: 4px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.03); }
+        .bar-white { background: linear-gradient(90deg, #555, #fff); }
+        .bar-silver { background: linear-gradient(90deg, #222, #aaa); }
+
+        .activity-card { background: rgba(255, 255, 255, 0.03); border-left: 2px solid #fff; transition: all 0.2s; }
+        .btn-primary { background: #fff; color: #000; transition: all 0.3s ease; }
+        .btn-primary:hover { transform: scale(1.05); box-shadow: 0 0 15px rgba(255, 255, 255, 0.3); }
+
+        .clickable { cursor: pointer; transition: all 0.2s; }
+        .clickable:active { transform: scale(0.92); }
+
+        .expand-content { transition: all 0.5s cubic-bezier(0, 1, 0, 1); overflow: hidden; }
+        .collapsed .expand-content { max-height: 0; margin-top: 0; opacity: 0; }
+        .expanded .expand-content { max-height: 1000px; margin-top: 1.25rem; opacity: 1; }
+
+        .emoji-btn { transition: all 0.2s; border: 1px solid transparent; }
+        .emoji-btn.selected { border-color: white; background: rgba(255,255,255,0.1); transform: scale(1.1); }
+        
+        .star-active { color: #fbbf24; filter: drop-shadow(0 0 5px rgba(251, 191, 36, 0.4)); }
+    </style>
+</head>
+<body class="p-4 md:p-8 min-h-screen">
+    <div class="bg-mesh"></div>
+
+    <div class="max-w-2xl mx-auto space-y-6">
+        <div class="premium-card p-6 rounded-[2rem] flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center text-2xl">👀</div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tighter text-white uppercase leading-none">AFK Site Monitor</h1>
+                    <p class="text-[9px] tracking-[0.3em] text-zinc-500 font-bold mt-1"></p>
+                </div>
+            </div>
+            <button onclick="openModal('addCharModal')" class="btn-primary font-bold py-2.5 px-6 rounded-xl text-xs">REGISTER</button>
+        </div>
+
+        <div class="space-y-3" id="charactersContainer"></div>
+    </div>
+
+    <div id="addCharModal" class="hidden fixed inset-0 bg-black/95 backdrop-blur-md flex justify-center items-center p-6 z-50">
+        <div class="premium-card p-8 rounded-[2.5rem] w-full max-w-sm">
+            <h3 class="text-lg font-bold text-white mb-6">NEW UNIT</h3>
+            <div class="space-y-4">
+                <div class="grid grid-cols-5 gap-2" id="add_emoji_pool"></div>
+                <input type="hidden" id="add_char_emoji" value="🐬">
+                <input type="text" id="add_char_name" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-sm text-white outline-none" placeholder="UNIT NAME">
+                <div class="grid grid-cols-2 gap-3">
+                    <input type="number" id="add_food" value="100" class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-sm text-center">
+                    <input type="number" id="add_brain" value="0" class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-sm text-center">
+                </div>
+            </div>
+            <div class="flex gap-2 mt-8">
+                <button onclick="closeModal('addCharModal')" class="flex-1 py-4 text-xs font-bold text-zinc-600">CANCEL</button>
+                <button onclick="submitAddCharacter()" class="flex-1 btn-primary font-bold py-4 rounded-xl text-xs">CONFIRM</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="editModal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md flex justify-center items-center p-6 z-50">
+        <div class="premium-card p-8 rounded-[2.5rem] w-full max-w-sm">
+            <h3 class="text-lg font-bold text-white mb-6">EDIT PROFILE</h3>
+            <input type="hidden" id="edit_old_id">
+            <div class="space-y-4">
+                <div class="grid grid-cols-5 gap-2" id="edit_emoji_pool"></div>
+                <input type="hidden" id="edit_char_emoji">
+                <input type="text" id="edit_char_name" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-sm text-white outline-none">
+                <div class="grid grid-cols-2 gap-3">
+                    <input type="number" step="0.1" id="edit_food" class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-sm text-center">
+                    <input type="number" step="0.1" id="edit_brain" class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-sm text-center">
+                </div>
+            </div>
+            <div class="flex gap-2 mt-8">
+                <button onclick="closeModal('editModal')" class="flex-1 py-4 text-xs font-bold text-zinc-500">CANCEL</button>
+                <button onclick="submitEditStatus()" class="flex-1 btn-primary font-bold py-4 rounded-xl text-xs">UPDATE</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="afkModal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md flex justify-center items-center p-6 z-50">
+        <div class="premium-card p-8 rounded-[2.5rem] w-full max-w-sm">
+            <h3 class="text-lg font-bold text-white mb-6 uppercase">Add Task</h3>
+            <input type="hidden" id="afk_char_name">
+            <div class="space-y-4">
+                <input type="text" id="afk_task_name" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-sm text-white outline-none" placeholder="Task...">
+                <input type="number" id="afk_minutes" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-sm outline-none" placeholder="Minutes...">
+            </div>
+            <div class="flex gap-2 mt-8">
+                <button onclick="closeModal('afkModal')" class="flex-1 py-4 text-xs font-bold text-zinc-500">CLOSE</button>
+                <button onclick="submitAFK()" class="flex-1 btn-primary font-bold py-4 rounded-xl text-xs">START</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://fupvihpfjstxqqcrmmmd.supabase.co"; 
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1cHZpaHBmanN0eHFxY3JtbW1kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk4ODU3NDksImV4cCI6MjA5NTQ2MTc0OX0.9uRBUPwDFlPB7cxpsi-HQeaiym5cjAU4u4uzUAFjYJU";
+        const FOOD_DECAY = 100 / (2 * 60 * 60);
+        const BRAIN_GROW = 100 / (2.5 * 60 * 60);
+        const EMOJIS = ["🐬", "🐳", "🐋", "🦈", "🐙", "🐚", "🦀", "🦞", "🦐", "🐠", "🐡", "🐢", "🦦", "🐧", "⛵"];
+
+        let supabaseClient = null;
+        let cachedCharacters = {};
+        let expandedStates = {};
+
+        window.addEventListener('DOMContentLoaded', () => {
+            supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            fetchData();
+            buildEmojiPools();
+            setInterval(tick, 1000);
+        });
+
+        // ฟังก์ชันจัดการ Local Favorites
+        function getLocalStars() {
+            const stars = localStorage.getItem('afk_stars');
+            return stars ? JSON.parse(stars) : {};
+        }
+
+        function saveLocalStar(id, state) {
+            const stars = getLocalStars();
+            stars[id] = state;
+            localStorage.setItem('afk_stars', JSON.stringify(stars));
+        }
+
+        async function fetchData() {
+            const { data } = await supabaseClient.from('afk_characters').select('*');
+            if(data) {
+                const localStars = getLocalStars();
+                data.forEach(d => {
+                    cachedCharacters[d.id] = {
+                        ...d, 
+                        timers: d.timers || [],
+                        is_starred: localStars[d.id] || false // ใช้ค่าจาก local
+                    };
+                    if (expandedStates[d.id] === undefined) expandedStates[d.id] = true;
+                });
+                renderStructure();
+            }
+            supabaseClient.channel('db').on('postgres_changes', {event:'*', schema:'public', table:'afk_characters'}, payload => {
+                if(payload.eventType === 'DELETE') delete cachedCharacters[payload.old.id];
+                else {
+                    const localStars = getLocalStars();
+                    cachedCharacters[payload.new.id] = {
+                        ...payload.new, 
+                        timers: payload.new.timers || [],
+                        is_starred: localStars[payload.new.id] || false
+                    };
+                }
+                renderStructure();
+            }).subscribe();
+        }
+
+        function toggleExpand(id) { expandedStates[id] = !expandedStates[id]; renderStructure(); }
+
+        function toggleStar(id) {
+            const newState = !cachedCharacters[id].is_starred;
+            cachedCharacters[id].is_starred = newState;
+            saveLocalStar(id, newState);
+            renderStructure(); // Render ใหม่เพื่อจัดลำดับ
+        }
+
+        function renderStructure() {
+            const container = document.getElementById('charactersContainer');
+            const sortedList = Object.values(cachedCharacters).sort((a, b) => {
+                if (a.is_starred !== b.is_starred) return a.is_starred ? -1 : 1;
+                if (a.is_paused !== b.is_paused) return a.is_paused ? 1 : -1;
+                return (a.id.split('_')[1] || 0) - (b.id.split('_')[1] || 0);
+            });
+
+            container.innerHTML = sortedList.map(char => {
+                const id = char.id;
+                const isPaused = char.is_paused;
+                const isExpanded = expandedStates[id];
+                const isStarred = char.is_starred;
+                
+                return `
+                <div class="premium-card rounded-[2rem] p-5 ${isPaused ? 'opacity-40 grayscale' : ''} ${isExpanded ? 'expanded' : 'collapsed'}">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <div onclick="openEditModal('${id}')" class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-2xl border border-white/5 clickable hover:bg-white/10">
+                                ${char.emoji}
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="toggleStar('${id}')" class="text-sm clickable ${isStarred ? 'star-active' : 'text-zinc-800'}">★</button>
+                                    <h2 class="text-sm font-bold text-white tracking-tight">${char.char_display_name}</h2>
+                                    <button onclick="togglePause('${id}')" class="w-6 h-6 flex items-center justify-center rounded-full bg-white/5 text-[9px] hover:bg-white/20 clickable border border-white/10">
+                                        ${isPaused ? '▶️' : '⏸️'}
+                                    </button>
+                                </div>
+                                <p class="text-[8px] font-bold text-zinc-500 uppercase tracking-widest">${isPaused ? 'Paused' : 'Monitoring'}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="toggleExpand('${id}')" class="p-2 text-zinc-600 hover:text-white transition-all clickable">${isExpanded ? '▲' : '▼'}</button>
+                            <button onclick="deleteChar('${id}')" class="p-2 text-zinc-800 hover:text-red-500 transition-colors text-xs">🗑️</button>
+                        </div>
+                    </div>
+
+                    <div class="expand-content">
+                        <div class="grid grid-cols-2 gap-3 mb-4">
+                            <div class="space-y-1 clickable group" onclick="quickResetFood('${id}')">
+                                <div class="flex justify-between text-[8px] font-bold px-1 text-zinc-500 group-hover:text-white">
+                                    <span>ENERGY</span> <span id="tf_${id}">0.0%</span>
+                                </div>
+                                <div class="progress-container"><div id="bf_${id}" class="h-full bar-white transition-all duration-1000"></div></div>
+                            </div>
+                            <div class="space-y-1 clickable group" onclick="quickResetBrain('${id}')">
+                                <div class="flex justify-between text-[8px] font-bold px-1 text-zinc-500 group-hover:text-white">
+                                    <span>BRAIN</span> <span id="tb_${id}">0.0%</span>
+                                </div>
+                                <div class="progress-container"><div id="bb_${id}" class="h-full bar-silver transition-all duration-1000"></div></div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-[9px] font-bold text-zinc-600 uppercase">Tasks</span>
+                            <button onclick="openAFKModal('${id}')" class="text-[9px] font-black text-white bg-white/10 px-2 py-1 rounded-lg border border-white/5">+ ADD</button>
+                        </div>
+                        <div id="timers_${id}" class="space-y-2"></div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function tick() {
+            const now = Date.now() / 1000;
+            for (const id in cachedCharacters) {
+                const char = cachedCharacters[id];
+                let f = char.food_base, b = char.brain_base;
+                if(!char.is_paused) {
+                    const elapsed = now - char.status_updated_at;
+                    f = Math.max(0, f - (elapsed * FOOD_DECAY));
+                    b = Math.min(100, b + (elapsed * BRAIN_GROW));
+                }
+                
+                const elF = document.getElementById(`bf_${id}`), elB = document.getElementById(`bb_${id}`);
+                if(elF) {
+                    elF.style.width = f + '%';
+                    document.getElementById(`tf_${id}`).innerText = f.toFixed(1) + '%';
+                    elB.style.width = b + '%';
+                    document.getElementById(`tb_${id}`).innerText = b.toFixed(1) + '%';
+                    
+                    const tContainer = document.getElementById(`timers_${id}`);
+                    if(char.timers.length > 0) {
+                        tContainer.innerHTML = char.timers.map(t => {
+                            const rem = char.is_paused ? 'PAUSED' : Math.max(0, Math.ceil((t.target_time - now)/60)) + 'm';
+                            return `
+                            <div class="activity-card p-2 rounded-xl flex justify-between items-center">
+                                <span class="text-[10px] font-bold text-zinc-400 truncate pr-2">⚪ ${t.item_name}</span>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[9px] font-black text-white bg-white/10 px-2 py-0.5 rounded-lg">${rem}</span>
+                                    <button onclick="deleteActivity('${id}', '${t.id}')" class="text-[10px] text-zinc-700 hover:text-white px-1">✕</button>
+                                </div>
+                            </div>`;
+                        }).join('');
+                    } else { tContainer.innerHTML = ''; }
+                }
+            }
+        }
+
+        async function deleteActivity(charId, timerId) {
+            const char = cachedCharacters[charId];
+            const updatedTimers = char.timers.filter(t => t.id !== timerId);
+            await supabaseClient.from('afk_characters').update({ timers: updatedTimers }).eq('id', charId);
+        }
+
+        async function submitAddCharacter() {
+            const name = document.getElementById('add_char_name').value.trim();
+            if(!name) return;
+            const newChar = {
+                id: "char_" + Date.now(),
+                char_display_name: name,
+                emoji: document.getElementById('add_char_emoji').value,
+                food_base: parseFloat(document.getElementById('add_food').value) || 100,
+                brain_base: parseFloat(document.getElementById('add_brain').value) || 0,
+                status_updated_at: Date.now() / 1000,
+                is_paused: false,
+                timers: []
+            };
+            await supabaseClient.from('afk_characters').insert([newChar]);
+            closeModal('addCharModal');
+        }
+
+        async function togglePause(id) {
+            const char = cachedCharacters[id];
+            const now = Date.now() / 1000;
+            const updates = { is_paused: !char.is_paused, status_updated_at: now };
+            if(!char.is_paused) {
+                const elap = now - char.status_updated_at;
+                updates.food_base = Math.max(0, char.food_base - (elap * FOOD_DECAY));
+                updates.brain_base = Math.min(100, char.brain_base + (elap * BRAIN_GROW));
+                char.timers.forEach(t => t.saved_remaining_sec = Math.max(0, t.target_time - now));
+            } else {
+                char.timers.forEach(t => t.target_time = now + (t.saved_remaining_sec || 0));
+            }
+            updates.timers = char.timers;
+            await supabaseClient.from('afk_characters').update(updates).eq('id', id);
+        }
+
+        async function quickResetFood(id) { await supabaseClient.from('afk_characters').update({food_base: 100, status_updated_at: Date.now()/1000}).eq('id', id); }
+        async function quickResetBrain(id) { await supabaseClient.from('afk_characters').update({brain_base: 0, status_updated_at: Date.now()/1000}).eq('id', id); }
+        async function deleteChar(id) { if(confirm("DELETE UNIT?")) await supabaseClient.from('afk_characters').delete().eq('id', id); }
+
+        function openModal(m) { document.getElementById(m).classList.remove('hidden'); }
+        function closeModal(m) { document.getElementById(m).classList.add('hidden'); }
+        
+        function openEditModal(id) {
+            const char = cachedCharacters[id];
+            document.getElementById('edit_old_id').value = id;
+            document.getElementById('edit_char_name').value = char.char_display_name;
+            document.getElementById('edit_food').value = char.food_base.toFixed(1);
+            document.getElementById('edit_brain').value = char.brain_base.toFixed(1);
+            setEditEmoji(char.emoji);
+            openModal('editModal');
+        }
+
+        async function submitEditStatus() {
+            const id = document.getElementById('edit_old_id').value;
+            await supabaseClient.from('afk_characters').update({
+                char_display_name: document.getElementById('edit_char_name').value,
+                food_base: parseFloat(document.getElementById('edit_food').value),
+                brain_base: parseFloat(document.getElementById('edit_brain').value),
+                emoji: document.getElementById('edit_char_emoji').value,
+                status_updated_at: Date.now() / 1000
+            }).eq('id', id);
+            closeModal('editModal');
+        }
+
+        function openAFKModal(id) { document.getElementById('afk_char_name').value = id; openModal('afkModal'); }
+        async function submitAFK() {
+            const id = document.getElementById('afk_char_name').value;
+            const task = document.getElementById('afk_task_name').value || "Working";
+            const mins = parseInt(document.getElementById('afk_minutes').value) || 30;
+            const now = Date.now() / 1000;
+            const newTimer = { id: Math.random().toString(36).substr(2,9), item_name: task, target_time: now + (mins * 60) };
+            if(cachedCharacters[id].is_paused) newTimer.saved_remaining_sec = mins * 60;
+            cachedCharacters[id].timers.push(newTimer);
+            await supabaseClient.from('afk_characters').update({timers: cachedCharacters[id].timers}).eq('id', id);
+            closeModal('afkModal');
+        }
+
+        function buildEmojiPools() {
+            ['add_emoji_pool', 'edit_emoji_pool'].forEach(pId => {
+                const pool = document.getElementById(pId);
+                pool.innerHTML = EMOJIS.map(e => `
+                    <button type="button" onclick="${pId.startsWith('add') ? 'setEmoji' : 'setEditEmoji'}('${e}', this)" 
+                            class="emoji-btn p-2 bg-zinc-900 rounded-lg text-lg hover:bg-zinc-800">
+                        ${e}
+                    </button>
+                `).join('');
+            });
+        }
+        function setEmoji(e, btn) {
+            document.getElementById('add_char_emoji').value = e;
+            document.querySelectorAll('#add_emoji_pool .emoji-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+        }
+        function setEditEmoji(e, btn) {
+            document.getElementById('edit_char_emoji').value = e;
+            document.querySelectorAll('#edit_emoji_pool .emoji-btn').forEach(b => {
+                b.classList.remove('selected');
+                if(b.innerText.trim() === e) b.classList.add('selected');
+            });
+            if(btn) btn.classList.add('selected');
+        }
+    </script>
+</body>
+</html>

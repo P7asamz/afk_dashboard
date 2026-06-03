@@ -3,112 +3,233 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>👀 AFK Site </title>
+    <title>👾 AFK MONITOR - DARK CYBER MULTI-COL</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Mitr:wght@300;400;600&display=swap" rel="stylesheet">
+    
     <style>
-        :root { --accent: #ffffff; --bg-dark: #000000; --card-bg: #0a0a0a; }
-        body { background-color: var(--bg-dark); color: #ffffff; font-family: 'Anuphan', sans-serif; overflow-x: hidden; }
-        .bg-mesh { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% -20%, #1a1a1a 0%, #000000 80%); z-index: -1; }
-        
-        .premium-card {
-            background: var(--card-bg);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        :root { 
+            --bg-main: #0a0a0c;
+            --border-main: #ffffff;
+            --card-bg: #121216;
+            --pixel-neon: #39ff14;
         }
-        .premium-card:hover { border-color: rgba(255, 255, 255, 0.2); }
         
-        .progress-container { background: #111; height: 10px; border-radius: 4px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.03); }
-        .bar-white { background: linear-gradient(90deg, #555, #fff); }
-        .bar-silver { background: linear-gradient(90deg, #222, #aaa); }
+        body { 
+            background-color: var(--bg-main); 
+            color: #ffffff; 
+            font-family: 'Mitr', sans-serif;
+            image-rendering: pixelated;
+        }
 
-        .activity-card { background: rgba(255, 255, 255, 0.03); border-left: 2px solid #fff; transition: all 0.2s; }
-        .btn-primary { background: #fff; color: #000; transition: all 0.3s ease; }
-        .btn-primary:hover { transform: scale(1.05); box-shadow: 0 0 15px rgba(255, 255, 255, 0.3); }
-
-        .clickable { cursor: pointer; transition: all 0.2s; }
-        .clickable:active { transform: scale(0.92); }
-
-        .expand-content { transition: all 0.5s cubic-bezier(0, 1, 0, 1); overflow: hidden; }
-        .collapsed .expand-content { max-height: 0; margin-top: 0; opacity: 0; }
-        .expanded .expand-content { max-height: 1000px; margin-top: 1.25rem; opacity: 1; }
-
-        .emoji-btn { transition: all 0.2s; border: 1px solid transparent; }
-        .emoji-btn.selected { border-color: white; background: rgba(255,255,255,0.1); transform: scale(1.1); }
+        .pixel-font {
+            font-family: 'Press Start 2P', cursive;
+        }
         
-        .star-active { color: #fbbf24; filter: drop-shadow(0 0 5px rgba(251, 191, 36, 0.4)); }
+        /* กรอบสไตล์เรโทรดาร์ก */
+        .pixel-box {
+            background: var(--card-bg);
+            border: 4px solid var(--border-main);
+            box-shadow: 4px 4px 0px rgba(255,255,255,0.2);
+        }
+
+        .pixel-card {
+            background: var(--card-bg);
+            border: 4px solid #27272a;
+            box-shadow: 4px 4px 0px #000000;
+            transition: all 0.1s ease;
+        }
+        .pixel-card:hover {
+            border-color: var(--border-main);
+            box-shadow: 4px 4px 0px var(--border-main);
+        }
+        
+        /* ปุ่มตู้เกม */
+        .pixel-btn {
+            background: #ffffff;
+            color: #000000;
+            border: 4px solid #000000;
+            box-shadow: 0px 4px 0px #27272a;
+            font-family: 'Press Start 2P', cursive;
+            cursor: pointer;
+        }
+        .pixel-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0px 0px 0px #000000;
+        }
+
+        .pixel-btn-neon {
+            background: #121216;
+            color: #39ff14;
+            border: 4px solid #39ff14;
+            box-shadow: 0px 4px 0px #0b5003;
+        }
+        .pixel-btn-neon:active {
+            transform: translateY(4px);
+            box-shadow: 0px 0px 0px #000000;
+        }
+        
+        /* หลอดอาร์พีจีแบบเรืองแสง */
+        .rpg-bar-container { 
+            background: #000000; 
+            height: 16px; 
+            border: 2px solid #ffffff;
+            padding: 1px;
+        }
+        .bar-energy { background: #ff3e3e; box-shadow: 0 0 8px #ff3e3e; }
+        .bar-brain { background: #00bfff; box-shadow: 0 0 8px #00bfff; }
+
+        .clickable { cursor: pointer; }
+
+        .expand-content { transition: max-height 0.2s ease-out; overflow: hidden; }
+        .collapsed .expand-content { max-height: 0; }
+        .expanded .expand-content { max-height: 2000px; padding-top: 1rem; }
+
+        /* การเลือกอิโมจิ */
+        .emoji-btn { 
+            border: 4px solid transparent; 
+            background: #1f1f23;
+        }
+        .emoji-btn.selected { 
+            border-color: #ffffff; 
+            background: #ffffff;
+        }
+        
+        .star-active { color: #ffd700; text-shadow: 0 0 6px #ffd700; }
+
+        /* สไตล์ Custom Slider */
+        .cyber-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            background: #27272a;
+            border: 2px solid #ffffff;
+            outline: none;
+        }
+        .cyber-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #39ff14;
+            border: 2px solid #000;
+            cursor: pointer;
+            box-shadow: 0 0 5px #39ff14;
+        }
     </style>
 </head>
 <body class="p-4 md:p-8 min-h-screen">
-    <div class="bg-mesh"></div>
 
-    <div class="max-w-2xl mx-auto space-y-6">
-        <div class="premium-card p-6 rounded-[2rem] flex justify-between items-center">
+    <!-- ขยาย max-w-6xl เพื่อให้เวลากาง 3 คอลัมน์แล้วไม่เบียดกันเกินไป -->
+    <div class="max-w-6xl mx-auto space-y-6">
+        
+        <!-- Header & Controller -->
+        <div class="pixel-box p-4 flex flex-col md:flex-row justify-between items-center gap-6">
             <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center text-2xl">👀</div>
+                <div class="w-12 h-12 bg-white text-black flex items-center justify-center text-2xl">👀</div>
                 <div>
-                    <h1 class="text-xl font-bold tracking-tighter text-white uppercase leading-none">AFK Site Monitor</h1>
-                    <p class="text-[9px] tracking-[0.3em] text-zinc-500 font-bold mt-1"></p>
+                    <h1 class="text-base font-bold text-white pixel-font tracking-wide">AFK MONITOR</h1>
+                    <p class="text-[9px] text-zinc-500 pixel-font mt-1">ปลาเผาน่ารัก</p>
                 </div>
             </div>
-            <button onclick="openModal('addCharModal')" class="btn-primary font-bold py-2.5 px-6 rounded-xl text-xs">REGISTER</button>
+
+            <!-- สไลด์บาร์ปรับคอลัมน์ -->
+            <div class="flex items-center gap-3 bg-black/40 border-2 border-zinc-800 p-2 min-w-[200px]">
+                <span class="text-[8px] pixel-font text-zinc-400 whitespace-nowrap">COLUMNS: <span id="colValue" class="text-[#39ff14]">1</span></span>
+                <input type="range" id="columnSlider" min="1" max="3" value="1" oninput="changeGridColumns(this.value)" class="cyber-slider">
+            </div>
+
+            <div class="flex gap-2">
+                <button onclick="openMissionsOverview()" class="pixel-btn-neon text-[9px] py-2 px-3">📋 MISSIONS</button>
+                <button onclick="openModal('addCharModal')" class="pixel-btn text-[9px] py-2 px-3">REGISTER</button>
+            </div>
         </div>
 
-        <div class="space-y-3" id="charactersContainer"></div>
+        <!-- รายการตัวละคร (ปรับเปลี่ยนคอลัมน์ผ่าน JavaScript) -->
+        <div class="grid grid-cols-1 gap-4" id="charactersContainer"></div>
     </div>
 
-    <div id="addCharModal" class="hidden fixed inset-0 bg-black/95 backdrop-blur-md flex justify-center items-center p-6 z-50">
-        <div class="premium-card p-8 rounded-[2.5rem] w-full max-w-sm">
-            <h3 class="text-lg font-bold text-white mb-6">NEW UNIT</h3>
+    <!-- MODAL: รายการภารกิจรวมทั้งหมด (Missions Overview) -->
+    <div id="overviewModal" class="hidden fixed inset-0 bg-black/80 flex justify-center items-center p-4 z-50">
+        <div class="pixel-box p-6 w-full max-w-lg">
+            <h3 class="text-xs font-bold text-[#39ff14] pixel-font mb-4">▶ ALL LIVE MISSIONS</h3>
+            <div class="max-h-72 overflow-y-auto space-y-2 pr-2 border-2 border-dashed border-zinc-800 p-2 bg-black/40" id="overview_list"></div>
+            <div class="mt-6 flex justify-end">
+                <button onclick="closeModal('overviewModal')" class="pixel-btn text-xs py-2 px-6">CLOSE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: เพิ่มตัวละคร -->
+    <div id="addCharModal" class="hidden fixed inset-0 bg-black/80 flex justify-center items-center p-4 z-50">
+        <div class="pixel-box p-6 w-full max-w-md">
+            <h3 class="text-xs font-bold text-white pixel-font mb-4">▶ NEW UNIT</h3>
             <div class="space-y-4">
-                <div class="grid grid-cols-5 gap-2" id="add_emoji_pool"></div>
+                <label class="block text-[10px] text-zinc-400 pixel-font">AVATAR SELECTION</label>
+                <div class="grid grid-cols-5 gap-2 p-2 bg-black/40 border-2 border-zinc-800" id="add_emoji_pool"></div>
+                
                 <input type="hidden" id="add_char_emoji" value="🐬">
-                <input type="text" id="add_char_name" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-sm text-white outline-none" placeholder="UNIT NAME">
+                <input type="text" id="add_char_name" class="w-full bg-black text-white border-4 border-zinc-800 p-3 text-sm font-bold outline-none" placeholder="UNIT NAME...">
+                
                 <div class="grid grid-cols-2 gap-3">
-                    <input type="number" id="add_food" value="100" class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-sm text-center">
-                    <input type="number" id="add_brain" value="0" class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-sm text-center">
+                    <div>
+                        <label class="block text-[9px] text-zinc-500 pixel-font mb-1">START ENERGY</label>
+                        <input type="number" id="add_food" value="100" class="w-full bg-black text-white border-4 border-zinc-800 p-2 text-center text-sm font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-[9px] text-zinc-500 pixel-font mb-1">START BRAIN</label>
+                        <input type="number" id="add_brain" value="0" class="w-full bg-black text-white border-4 border-zinc-800 p-2 text-center text-sm font-bold">
+                    </div>
                 </div>
             </div>
-            <div class="flex gap-2 mt-8">
-                <button onclick="closeModal('addCharModal')" class="flex-1 py-4 text-xs font-bold text-zinc-600">CANCEL</button>
-                <button onclick="submitAddCharacter()" class="flex-1 btn-primary font-bold py-4 rounded-xl text-xs">CONFIRM</button>
+            <div class="flex gap-4 mt-6">
+                <button onclick="closeModal('addCharModal')" class="flex-1 bg-zinc-800 text-white border-4 border-black py-2 font-bold text-xs">CANCEL</button>
+                <button onclick="submitAddCharacter()" class="flex-1 pixel-btn text-xs py-2">CONFIRM</button>
             </div>
         </div>
     </div>
 
-    <div id="editModal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md flex justify-center items-center p-6 z-50">
-        <div class="premium-card p-8 rounded-[2.5rem] w-full max-w-sm">
-            <h3 class="text-lg font-bold text-white mb-6">EDIT PROFILE</h3>
+    <!-- MODAL: แก้ไขตัวละคร -->
+    <div id="editModal" class="hidden fixed inset-0 bg-black/80 flex justify-center items-center p-4 z-50">
+        <div class="pixel-box p-6 w-full max-w-md">
+            <h3 class="text-xs font-bold text-white pixel-font mb-4">▶ EDIT PROFILE</h3>
             <input type="hidden" id="edit_old_id">
             <div class="space-y-4">
-                <div class="grid grid-cols-5 gap-2" id="edit_emoji_pool"></div>
+                <div class="grid grid-cols-5 gap-2 p-2 bg-black/40 border-2 border-zinc-800" id="edit_emoji_pool"></div>
                 <input type="hidden" id="edit_char_emoji">
-                <input type="text" id="edit_char_name" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-sm text-white outline-none">
+                <input type="text" id="edit_char_name" class="w-full bg-black text-white border-4 border-zinc-800 p-3 text-sm font-bold outline-none">
+                
                 <div class="grid grid-cols-2 gap-3">
-                    <input type="number" step="0.1" id="edit_food" class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-sm text-center">
-                    <input type="number" step="0.1" id="edit_brain" class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-sm text-center">
+                    <div>
+                        <label class="block text-[9px] text-zinc-500 pixel-font mb-1">ENERGY</label>
+                        <input type="number" step="0.1" id="edit_food" class="w-full bg-black text-white border-4 border-zinc-800 p-2 text-center text-sm font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-[9px] text-zinc-500 pixel-font mb-1">BRAIN</label>
+                        <input type="number" step="0.1" id="edit_brain" class="w-full bg-black text-white border-4 border-zinc-800 p-2 text-center text-sm font-bold">
+                    </div>
                 </div>
             </div>
-            <div class="flex gap-2 mt-8">
-                <button onclick="closeModal('editModal')" class="flex-1 py-4 text-xs font-bold text-zinc-500">CANCEL</button>
-                <button onclick="submitEditStatus()" class="flex-1 btn-primary font-bold py-4 rounded-xl text-xs">UPDATE</button>
+            <div class="flex gap-4 mt-6">
+                <button onclick="closeModal('editModal')" class="flex-1 bg-zinc-800 text-white border-4 border-black py-2 font-bold text-xs">CANCEL</button>
+                <button onclick="submitEditStatus()" class="flex-1 pixel-btn text-xs py-2">UPDATE</button>
             </div>
         </div>
     </div>
 
-    <div id="afkModal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md flex justify-center items-center p-6 z-50">
-        <div class="premium-card p-8 rounded-[2.5rem] w-full max-w-sm">
-            <h3 class="text-lg font-bold text-white mb-6 uppercase">Add Task</h3>
+    <!-- MODAL: เพิ่ม Task -->
+    <div id="afkModal" class="hidden fixed inset-0 bg-black/80 flex justify-center items-center p-4 z-50">
+        <div class="pixel-box p-6 w-full max-w-sm">
+            <h3 class="text-xs font-bold text-white pixel-font mb-4">▶ ADD MISSION</h3>
             <input type="hidden" id="afk_char_name">
             <div class="space-y-4">
-                <input type="text" id="afk_task_name" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-sm text-white outline-none" placeholder="Task...">
-                <input type="number" id="afk_minutes" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-sm outline-none" placeholder="Minutes...">
+                <input type="text" id="afk_task_name" class="w-full bg-black text-white border-4 border-zinc-800 p-3 text-sm outline-none" placeholder="MISSION NAME...">
+                <input type="number" id="afk_minutes" class="w-full bg-black text-white border-4 border-zinc-800 p-3 text-sm outline-none" placeholder="MINUTES...">
             </div>
-            <div class="flex gap-2 mt-8">
-                <button onclick="closeModal('afkModal')" class="flex-1 py-4 text-xs font-bold text-zinc-500">CLOSE</button>
-                <button onclick="submitAFK()" class="flex-1 btn-primary font-bold py-4 rounded-xl text-xs">START</button>
+            <div class="flex gap-4 mt-6">
+                <button onclick="closeModal('afkModal')" class="flex-1 bg-zinc-800 text-white border-4 border-black py-2 font-bold text-xs">CLOSE</button>
+                <button onclick="submitAFK()" class="flex-1 pixel-btn text-xs py-2">START</button>
             </div>
         </div>
     </div>
@@ -116,22 +237,52 @@
     <script>
         const SUPABASE_URL = "https://fupvihpfjstxqqcrmmmd.supabase.co"; 
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1cHZpaHBmanN0eHFxY3JtbW1kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk4ODU3NDksImV4cCI6MjA5NTQ2MTc0OX0.9uRBUPwDFlPB7cxpsi-HQeaiym5cjAU4u4uzUAFjYJU";
-        const FOOD_DECAY = 100 / (2 * 60 * 60);
+        const FOOD_DECAY = 100 / (2 * 60 * 60); 
         const BRAIN_GROW = 100 / (2.5 * 60 * 60);
         const EMOJIS = ["🐬", "🐳", "🐋", "🦈", "🐙", "🐚", "🦀", "🦞", "🦐", "🐠", "🐡", "🐢", "🦦", "🐧", "⛵"];
 
         let supabaseClient = null;
         let cachedCharacters = {};
         let expandedStates = {};
+        let currentCols = 1; // เริ่มต้นที่ 1 คอลัมน์
 
         window.addEventListener('DOMContentLoaded', () => {
             supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            
+            // โหลดจำนวนคอลัมน์ล่าสุดที่ผู้ใช้เคยตั้งไว้จาก LocalStorage (ถ้ามี)
+            const savedCols = localStorage.getItem('afk_display_cols');
+            if(savedCols) {
+                currentCols = parseInt(savedCols);
+                document.getElementById('columnSlider').value = currentCols;
+            }
+            changeGridColumns(currentCols);
+
             fetchData();
             buildEmojiPools();
             setInterval(tick, 1000);
         });
 
-        // ฟังก์ชันจัดการ Local Favorites
+        // ฟังก์ชันสลับคอลัมน์ผ่านสไลด์บาร์
+        function changeGridColumns(val) {
+            currentCols = parseInt(val);
+            document.getElementById('colValue').innerText = currentCols;
+            localStorage.setItem('afk_display_cols', currentCols);
+
+            const container = document.getElementById('charactersContainer');
+            if(container) {
+                // เคลียร์คลาสเก่าออกก่อนรันเซ็ตติ้งใหม่
+                container.classList.remove('grid-cols-1', 'sm:grid-cols-2', 'md:grid-cols-3');
+                
+                if(currentCols === 1) {
+                    container.classList.add('grid-cols-1');
+                } else if(currentCols === 2) {
+                    container.classList.add('grid-cols-1', 'sm:grid-cols-2');
+                } else if(currentCols === 3) {
+                    container.classList.add('grid-cols-1', 'sm:grid-cols-2', 'md:grid-cols-3');
+                }
+            }
+        }
+
         function getLocalStars() {
             const stars = localStorage.getItem('afk_stars');
             return stars ? JSON.parse(stars) : {};
@@ -151,7 +302,7 @@
                     cachedCharacters[d.id] = {
                         ...d, 
                         timers: d.timers || [],
-                        is_starred: localStars[d.id] || false // ใช้ค่าจาก local
+                        is_starred: localStars[d.id] || false
                     };
                     if (expandedStates[d.id] === undefined) expandedStates[d.id] = true;
                 });
@@ -177,15 +328,25 @@
             const newState = !cachedCharacters[id].is_starred;
             cachedCharacters[id].is_starred = newState;
             saveLocalStar(id, newState);
-            renderStructure(); // Render ใหม่เพื่อจัดลำดับ
+            renderStructure();
+        }
+
+        function getSecondsUntilDeath(char) {
+            if (char.is_paused) return Infinity; 
+            const now = Date.now() / 1000;
+            const elapsed = now - char.status_updated_at;
+            const currentFood = Math.max(0, char.food_base - (elapsed * FOOD_DECAY));
+            if (currentFood <= 0) return 0;
+            return currentFood / FOOD_DECAY;
         }
 
         function renderStructure() {
             const container = document.getElementById('charactersContainer');
+            
             const sortedList = Object.values(cachedCharacters).sort((a, b) => {
                 if (a.is_starred !== b.is_starred) return a.is_starred ? -1 : 1;
                 if (a.is_paused !== b.is_paused) return a.is_paused ? 1 : -1;
-                return (a.id.split('_')[1] || 0) - (b.id.split('_')[1] || 0);
+                return getSecondsUntilDeath(a) - getSecondsUntilDeath(b);
             });
 
             container.innerHTML = sortedList.map(char => {
@@ -195,57 +356,63 @@
                 const isStarred = char.is_starred;
                 
                 return `
-                <div class="premium-card rounded-[2rem] p-5 ${isPaused ? 'opacity-40 grayscale' : ''} ${isExpanded ? 'expanded' : 'collapsed'}">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-4">
-                            <div onclick="openEditModal('${id}')" class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-2xl border border-white/5 clickable hover:bg-white/10">
+                <div id="card_${id}" class="pixel-card p-4 rounded-none ${isPaused ? 'opacity-40 bg-zinc-900/50' : 'bg-[#121216]'} ${isExpanded ? 'expanded' : 'collapsed'}">
+                    <div class="flex items-center justify-between flex-wrap gap-2">
+                        <div class="flex items-center gap-3 truncate max-w-[85%]">
+                            <div onclick="openEditModal('${id}')" class="w-11 h-11 bg-zinc-900 border-2 border-zinc-700 flex items-center justify-center text-2xl flex-shrink-0 clickable hover:border-white">
                                 ${char.emoji}
                             </div>
-                            <div>
+                            <div class="truncate">
                                 <div class="flex items-center gap-2">
-                                    <button onclick="toggleStar('${id}')" class="text-sm clickable ${isStarred ? 'star-active' : 'text-zinc-800'}">★</button>
-                                    <h2 class="text-sm font-bold text-white tracking-tight">${char.char_display_name}</h2>
-                                    <button onclick="togglePause('${id}')" class="w-6 h-6 flex items-center justify-center rounded-full bg-white/5 text-[9px] hover:bg-white/20 clickable border border-white/10">
-                                        ${isPaused ? '▶️' : '⏸️'}
+                                    <button onclick="toggleStar('${id}')" class="text-xl leading-none clickable ${isStarred ? 'star-active' : 'text-zinc-700'}">★</button>
+                                    <h2 class="text-sm font-bold text-white tracking-wide truncate">${char.char_display_name}</h2>
+                                    <button onclick="togglePause('${id}')" class="w-6 h-6 flex items-center justify-center flex-shrink-0 bg-zinc-800 border border-zinc-600 text-[10px] font-bold hover:bg-zinc-700 clickable">
+                                        ${isPaused ? '▶' : '⏸'}
                                     </button>
                                 </div>
-                                <p class="text-[8px] font-bold text-zinc-500 uppercase tracking-widest">${isPaused ? 'Paused' : 'Monitoring'}</p>
+                                <p id="death_timer_${id}" class="text-[9px] pixel-font mt-1 font-bold text-zinc-400">CALCULATING...</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-2">
-                            <button onclick="toggleExpand('${id}')" class="p-2 text-zinc-600 hover:text-white transition-all clickable">${isExpanded ? '▲' : '▼'}</button>
-                            <button onclick="deleteChar('${id}')" class="p-2 text-zinc-800 hover:text-red-500 transition-colors text-xs">🗑️</button>
+                            <button onclick="toggleExpand('${id}')" class="p-1 text-xs text-zinc-400 font-bold pixel-font clickable">${isExpanded ? '▲' : '▼'}</button>
+                            <button onclick="deleteChar('${id}')" class="text-zinc-600 hover:text-red-500 text-xs font-bold px-1">X</button>
                         </div>
                     </div>
 
                     <div class="expand-content">
-                        <div class="grid grid-cols-2 gap-3 mb-4">
-                            <div class="space-y-1 clickable group" onclick="quickResetFood('${id}')">
-                                <div class="flex justify-between text-[8px] font-bold px-1 text-zinc-500 group-hover:text-white">
-                                    <span>ENERGY</span> <span id="tf_${id}">0.0%</span>
+                        <div class="grid grid-cols-1 gap-3 mb-4">
+                            <div class="p-2 border border-zinc-800 bg-black/40 clickable" onclick="quickResetFood('${id}')">
+                                <div class="flex justify-between text-[9px] pixel-font text-red-400 mb-1">
+                                    <span>HP:ENERGY</span> <span id="tf_${id}">0.0%</span>
                                 </div>
-                                <div class="progress-container"><div id="bf_${id}" class="h-full bar-white transition-all duration-1000"></div></div>
+                                <div class="rpg-bar-container"><div id="bf_${id}" class="h-full bar-energy transition-all duration-1000"></div></div>
                             </div>
-                            <div class="space-y-1 clickable group" onclick="quickResetBrain('${id}')">
-                                <div class="flex justify-between text-[8px] font-bold px-1 text-zinc-500 group-hover:text-white">
-                                    <span>BRAIN</span> <span id="tb_${id}">0.0%</span>
+                            <div class="p-2 border border-zinc-800 bg-black/40 clickable" onclick="quickResetBrain('${id}')">
+                                <div class="flex justify-between text-[9px] pixel-font text-sky-400 mb-1">
+                                    <span>MP:BRAIN</span> <span id="tb_${id}">0.0%</span>
                                 </div>
-                                <div class="progress-container"><div id="bb_${id}" class="h-full bar-silver transition-all duration-1000"></div></div>
+                                <div class="rpg-bar-container"><div id="bb_${id}" class="h-full bar-brain transition-all duration-1000"></div></div>
                             </div>
                         </div>
                         
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-[9px] font-bold text-zinc-600 uppercase">Tasks</span>
-                            <button onclick="openAFKModal('${id}')" class="text-[9px] font-black text-white bg-white/10 px-2 py-1 rounded-lg border border-white/5">+ ADD</button>
+                        <div class="border-t border-dashed border-zinc-800 pt-3">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-[9px] pixel-font text-zinc-400">MISSIONS LIST</span>
+                                <button onclick="openAFKModal('${id}')" class="bg-zinc-800 text-white text-[9px] border border-zinc-600 px-2 py-0.5 clickable">+ ADD</button>
+                            </div>
+                            <div id="timers_${id}" class="space-y-2"></div>
                         </div>
-                        <div id="timers_${id}" class="space-y-2"></div>
                     </div>
                 </div>`;
             }).join('');
+            
+            // เรียกซ้ำเพื่อให้คลาส Column ไม่โดนเรนเดอร์ทับหายไป
+            changeGridColumns(currentCols);
         }
 
         function tick() {
             const now = Date.now() / 1000;
+
             for (const id in cachedCharacters) {
                 const char = cachedCharacters[id];
                 let f = char.food_base, b = char.brain_base;
@@ -255,6 +422,28 @@
                     b = Math.min(100, b + (elapsed * BRAIN_GROW));
                 }
                 
+                const elDeath = document.getElementById(`death_timer_${id}`);
+                if (elDeath) {
+                    if (char.is_paused) {
+                        elDeath.innerText = "⏸ PAUSED";
+                        elDeath.className = "text-[9px] pixel-font mt-1 text-zinc-500";
+                    } else if (f <= 0) {
+                        elDeath.innerText = "💀 DIED (0%)";
+                        elDeath.className = "text-[9px] pixel-font mt-1 text-red-500 animate-pulse";
+                    } else {
+                        const remSec = f / FOOD_DECAY;
+                        const hrs = Math.floor(remSec / 3600);
+                        const mins = Math.floor((remSec % 3600) / 60);
+                        elDeath.innerText = `💀 DIE IN ${hrs}h ${mins}m`;
+                        
+                        if (remSec < 900) {
+                            elDeath.className = "text-[9px] pixel-font mt-1 text-red-400 font-bold animate-bounce";
+                        } else {
+                            elDeath.className = "text-[9px] pixel-font mt-1 text-[#39ff14]";
+                        }
+                    }
+                }
+
                 const elF = document.getElementById(`bf_${id}`), elB = document.getElementById(`bb_${id}`);
                 if(elF) {
                     elF.style.width = f + '%';
@@ -265,19 +454,105 @@
                     const tContainer = document.getElementById(`timers_${id}`);
                     if(char.timers.length > 0) {
                         tContainer.innerHTML = char.timers.map(t => {
-                            const rem = char.is_paused ? 'PAUSED' : Math.max(0, Math.ceil((t.target_time - now)/60)) + 'm';
+                            const rem = char.is_paused ? 'PAUSED' : Math.max(0, Math.ceil((t.target_time - now)/60)) + ' M';
                             return `
-                            <div class="activity-card p-2 rounded-xl flex justify-between items-center">
-                                <span class="text-[10px] font-bold text-zinc-400 truncate pr-2">⚪ ${t.item_name}</span>
+                            <div class="p-2 bg-black/60 border border-zinc-800 flex justify-between items-center">
+                                <span class="text-xs font-bold text-zinc-400 truncate pr-2">▪ ${t.item_name}</span>
                                 <div class="flex items-center gap-2">
-                                    <span class="text-[9px] font-black text-white bg-white/10 px-2 py-0.5 rounded-lg">${rem}</span>
-                                    <button onclick="deleteActivity('${id}', '${t.id}')" class="text-[10px] text-zinc-700 hover:text-white px-1">✕</button>
+                                    <span class="text-[9px] bg-zinc-800 text-white px-1.5 py-0.5 border border-zinc-700">${rem}</span>
+                                    <button onclick="deleteActivity('${id}', '${t.id}')" class="text-zinc-600 hover:text-white font-bold px-1 text-xs">✕</button>
                                 </div>
                             </div>`;
                         }).join('');
-                    } else { tContainer.innerHTML = ''; }
+                    } else { tContainer.innerHTML = '<p class="text-[9px] text-zinc-600 italic">No live mission...</p>'; }
                 }
             }
+            updateMissionsOverviewLive();
+        }
+
+        function openMissionsOverview() {
+            openModal('overviewModal');
+            updateMissionsOverviewLive();
+        }
+
+        function updateMissionsOverviewLive() {
+            const overviewContainer = document.getElementById('overview_list');
+            if (!overviewContainer || document.getElementById('overviewModal').classList.contains('hidden')) return;
+
+            const now = Date.now() / 1000;
+            let allMissions = [];
+
+            for (const charId in cachedCharacters) {
+                const char = cachedCharacters[charId];
+                char.timers.forEach(t => {
+                    const remSec = char.is_paused ? (t.saved_remaining_sec || 0) : Math.max(0, t.target_time - now);
+                    allMissions.push({
+                        charName: char.char_display_name,
+                        charEmoji: char.emoji,
+                        charId: charId,
+                        missionId: t.id,
+                        itemName: t.item_name,
+                        remSec: remSec,
+                        isPaused: char.is_paused
+                    });
+                });
+            }
+
+            allMissions.sort((a, b) => a.remSec - b.remSec);
+
+            if (allMissions.length === 0) {
+                overviewContainer.innerHTML = '<p class="text-xs text-zinc-600 text-center py-4 pixel-font">NO ACTIVE MISSIONS AT ALL</p>';
+                return;
+            }
+
+            overviewContainer.innerHTML = allMissions.map(m => {
+                const displayTime = m.isPaused ? 'PAUSED' : Math.ceil(m.remSec / 60) + ' MINS';
+                return `
+                <div class="p-2 bg-zinc-900/80 border border-zinc-700 flex justify-between items-center gap-2">
+                    <div class="flex items-center gap-2 truncate">
+                        <span class="text-lg">${m.charEmoji}</span>
+                        <div class="truncate">
+                            <p class="text-[10px] font-bold text-white truncate">${m.itemName}</p>
+                            <p class="text-[8px] text-zinc-500 uppercase pixel-font tracking-tighter">Owner: ${m.charName}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 flex-shrink-0">
+                        <span class="text-[9px] pixel-font ${m.remSec <= 120 && !m.isPaused ? 'text-yellow-400 animate-pulse' : 'text-zinc-300'} bg-black px-1.5 py-0.5 border border-zinc-800">${displayTime}</span>
+                        <button onclick="deleteActivity('${m.charId}', '${m.missionId}')" class="text-rose-500 font-bold text-xs px-1 hover:text-white">✕</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        async function quickResetFood(id) { 
+            const now = Date.now() / 1000;
+            const char = cachedCharacters[id];
+            let currentBrain = char.brain_base;
+            if(!char.is_paused) {
+                const elapsed = now - char.status_updated_at;
+                currentBrain = Math.min(100, currentBrain + (elapsed * BRAIN_GROW));
+            }
+            await supabaseClient.from('afk_characters').update({
+                food_base: 100, 
+                brain_base: currentBrain,
+                status_updated_at: now
+            }).eq('id', id); 
+            setTimeout(renderStructure, 500); 
+        }
+
+        async function quickResetBrain(id) { 
+            const now = Date.now() / 1000;
+            const char = cachedCharacters[id];
+            let currentFood = char.food_base;
+            if(!char.is_paused) {
+                const elapsed = now - char.status_updated_at;
+                currentFood = Math.max(0, currentFood - (elapsed * FOOD_DECAY));
+            }
+            await supabaseClient.from('afk_characters').update({
+                food_base: currentFood, 
+                brain_base: 0, 
+                status_updated_at: now
+            }).eq('id', id); 
         }
 
         async function deleteActivity(charId, timerId) {
@@ -317,10 +592,9 @@
             }
             updates.timers = char.timers;
             await supabaseClient.from('afk_characters').update(updates).eq('id', id);
+            setTimeout(renderStructure, 300);
         }
 
-        async function quickResetFood(id) { await supabaseClient.from('afk_characters').update({food_base: 100, status_updated_at: Date.now()/1000}).eq('id', id); }
-        async function quickResetBrain(id) { await supabaseClient.from('afk_characters').update({brain_base: 0, status_updated_at: Date.now()/1000}).eq('id', id); }
         async function deleteChar(id) { if(confirm("DELETE UNIT?")) await supabaseClient.from('afk_characters').delete().eq('id', id); }
 
         function openModal(m) { document.getElementById(m).classList.remove('hidden'); }
@@ -366,7 +640,7 @@
                 const pool = document.getElementById(pId);
                 pool.innerHTML = EMOJIS.map(e => `
                     <button type="button" onclick="${pId.startsWith('add') ? 'setEmoji' : 'setEditEmoji'}('${e}', this)" 
-                            class="emoji-btn p-2 bg-zinc-900 rounded-lg text-lg hover:bg-zinc-800">
+                            class="emoji-btn p-2 text-xl hover:bg-zinc-800 flex items-center justify-center">
                         ${e}
                     </button>
                 `).join('');

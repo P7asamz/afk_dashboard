@@ -3,56 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>👾 AFK MONITOR - DARK CYBER MULTI-COL</title>
+    <title>👾 AFK DASHBOARD - NIGHT BLUE MONITOR</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Mitr:wght@300;400;600&display=swap" rel="stylesheet">
     
     <style>
         :root { 
-            --bg-main: #0a0a0c;
-            --border-main: #ffffff;
-            --card-bg: #121216;
-            --pixel-neon: #39ff14;
+            --bg-main: #06080c;
+            --border-main: #7cd6ff; 
+            --card-bg: #0b0e14;
+            --cyber-blue: #00bfff;
+            --cyber-glow: rgba(124, 214, 255, 0.15); 
         }
         
+        html {
+            scroll-behavior: smooth;
+        }
+
         body { 
             background-color: var(--bg-main); 
-            color: #ffffff; 
+            color: #e2e8f0; 
             font-family: 'Mitr', sans-serif;
             image-rendering: pixelated;
+            background-image: linear-gradient(rgba(15, 23, 42, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(15, 23, 42, 0.5) 1px, transparent 1px);
+            background-size: 20px 20px;
         }
 
         .pixel-font {
             font-family: 'Press Start 2P', cursive;
         }
         
-        /* กรอบสไตล์เรโทรดาร์ก */
+        .cyber-header {
+            background: linear-gradient(135deg, #0b0e14 0%, #111622 100%);
+            border: 3px solid var(--border-main);
+            box-shadow: 0 0 12px var(--cyber-glow), inset 0 0 8px rgba(124, 214, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        .cyber-header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--border-main), transparent);
+            animation: scanline 5s linear infinite; 
+        }
+
+        @keyframes scanline {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
         .pixel-box {
             background: var(--card-bg);
-            border: 4px solid var(--border-main);
-            box-shadow: 4px 4px 0px rgba(255,255,255,0.2);
+            border: 3px solid #1a2233;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
         .pixel-card {
-            background: var(--card-bg);
-            border: 4px solid #27272a;
-            box-shadow: 4px 4px 0px #000000;
-            transition: all 0.1s ease;
+            background: #0b0e14;
+            border: 3px solid #161f30;
+            box-shadow: 6px 6px 0px #000000;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
         .pixel-card:hover {
             border-color: var(--border-main);
-            box-shadow: 4px 4px 0px var(--border-main);
+            box-shadow: 6px 6px 0px var(--cyber-glow);
+            transform: translateY(-2px);
         }
         
-        /* ปุ่มตู้เกม */
         .pixel-btn {
             background: #ffffff;
             color: #000000;
-            border: 4px solid #000000;
-            box-shadow: 0px 4px 0px #27272a;
+            border: 3px solid #000000;
+            box-shadow: 0px 4px 0px #1a2233;
             font-family: 'Press Start 2P', cursive;
             cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .pixel-btn:hover {
+            background: #7cd6ff;
+            box-shadow: 0px 4px 0px #0b4d6e;
         }
         .pixel-btn:active {
             transform: translateY(4px);
@@ -60,175 +91,246 @@
         }
 
         .pixel-btn-neon {
-            background: #121216;
-            color: #39ff14;
-            border: 4px solid #39ff14;
-            box-shadow: 0px 4px 0px #0b5003;
+            background: #0f1420;
+            color: #7cd6ff;
+            border: 3px solid #7cd6ff;
+            box-shadow: 0px 4px 0px #0b4d6e;
+            transition: all 0.2s ease;
+        }
+        .pixel-btn-neon:hover {
+            background: #7cd6ff;
+            color: #000000;
+            box-shadow: 0 0 8px var(--cyber-glow);
         }
         .pixel-btn-neon:active {
             transform: translateY(4px);
             box-shadow: 0px 0px 0px #000000;
         }
         
-        /* หลอดอาร์พีจีแบบเรืองแสง */
         .rpg-bar-container { 
             background: #000000; 
             height: 16px; 
-            border: 2px solid #ffffff;
+            border: 2px solid #1a2233;
             padding: 1px;
         }
-        .bar-energy { background: #ff3e3e; box-shadow: 0 0 8px #ff3e3e; }
-        .bar-brain { background: #00bfff; box-shadow: 0 0 8px #00bfff; }
+        .bar-energy { background: #ff4a4a; box-shadow: 0 0 6px rgba(255, 74, 74, 0.4); }
+        .bar-brain { background: #00bfff; box-shadow: 0 0 6px rgba(0, 191, 255, 0.4); }
 
         .clickable { cursor: pointer; }
 
-        .expand-content { transition: max-height 0.2s ease-out; overflow: hidden; }
-        .collapsed .expand-content { max-height: 0; }
-        .expanded .expand-content { max-height: 2000px; padding-top: 1rem; }
-
-        /* การเลือกอิโมจิ */
-        .emoji-btn { 
-            border: 4px solid transparent; 
-            background: #1f1f23;
+        .expand-content { 
+            max-height: 0;
+            overflow: hidden; 
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s ease, opacity 0.3s ease; 
+            opacity: 0;
         }
+        .expanded .expand-content { 
+            max-height: 1200px; 
+            padding-top: 1rem;
+            opacity: 1;
+        }
+
+        .emoji-btn { 
+            border: 3px solid transparent; 
+            background: #111622;
+            transition: all 0.2s ease;
+        }
+        .emoji-btn:hover { border-color: #44526e; }
         .emoji-btn.selected { 
-            border-color: #ffffff; 
+            border-color: var(--border-main); 
             background: #ffffff;
         }
         
-        .star-active { color: #ffd700; text-shadow: 0 0 6px #ffd700; }
+        .star-active { color: #ffd700; text-shadow: 0 0 8px #ffd700; }
 
-        /* สไตล์ Custom Slider */
         .cyber-slider {
             -webkit-appearance: none;
             width: 100%;
-            height: 8px;
-            background: #27272a;
-            border: 2px solid #ffffff;
+            height: 6px;
+            background: #161f30;
+            border: 1px solid #2a374e;
             outline: none;
+            border-radius: 3px;
         }
         .cyber-slider::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 16px;
-            height: 16px;
-            background: #39ff14;
+            width: 14px;
+            height: 14px;
+            background: #7cd6ff;
             border: 2px solid #000;
             cursor: pointer;
-            box-shadow: 0 0 5px #39ff14;
+            box-shadow: 0 0 6px #7cd6ff;
+            transition: transform 0.1s ease;
+        }
+        .cyber-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        #bottomMasterAlert {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            width: 100%;
+            max-width: 420px;
+            padding: 0 16px;
+            display: none; 
+            animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes slideUp {
+            from { transform: translate(-50%, 50px); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
+        }
+
+        .modal-bg {
+            backdrop-filter: blur(4px);
+            transition: all 0.3s ease;
+        }
+
+        .live-pulse {
+            animation: pulse-blue 2.5s infinite;
+        }
+        @keyframes pulse-blue {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(124, 214, 255, 0.5); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(124, 214, 255, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(124, 214, 255, 0); }
         }
     </style>
 </head>
 <body class="p-4 md:p-8 min-h-screen">
 
-    <!-- ขยาย max-w-6xl เพื่อให้เวลากาง 3 คอลัมน์แล้วไม่เบียดกันเกินไป -->
-    <div class="max-w-6xl mx-auto space-y-6">
+    <div class="max-w-7xl mx-auto space-y-6">
         
-        <!-- Header & Controller -->
-        <div class="pixel-box p-4 flex flex-col md:flex-row justify-between items-center gap-6">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-white text-black flex items-center justify-center text-2xl">👀</div>
+        <!-- HEADER ZONE -->
+        <div class="cyber-header p-5 md:p-6 flex flex-col lg:flex-row justify-between items-center gap-6 rounded-none">
+            <div class="flex items-center gap-4 w-full lg:w-auto">
+                <div class="w-12 h-12 bg-[#7cd6ff] text-black flex items-center justify-center text-2xl font-bold shadow-[0_0_10px_var(--cyber-glow)]">
+                    🤖
+                </div>
                 <div>
-                    <h1 class="text-base font-bold text-white pixel-font tracking-wide">AFK MONITOR</h1>
-                    <p class="text-[9px] text-zinc-500 pixel-font mt-1">ปลาเผาน่ารัก</p>
+                    <div class="flex items-center gap-3">
+                        <h1 class="text-lg md:text-xl font-bold text-white pixel-font tracking-wider">AFK DASHBOARD</h1>
+                        <span class="flex h-2.5 w-2.5 relative">
+                            <span class="live-pulse absolute inline-flex h-full w-full rounded-full bg-[#7cd6ff] opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#7cd6ff]"></span>
+                        </span>
+                    </div>
+                    <p class="text-[9px] text-slate-400 pixel-font mt-1.5 tracking-widest uppercase">Multi-Bot Status Control Unit</p>
                 </div>
             </div>
 
-            <!-- สไลด์บาร์ปรับคอลัมน์ -->
-            <div class="flex items-center gap-3 bg-black/40 border-2 border-zinc-800 p-2 min-w-[200px]">
-                <span class="text-[8px] pixel-font text-zinc-400 whitespace-nowrap">COLUMNS: <span id="colValue" class="text-[#39ff14]">1</span></span>
-                <input type="range" id="columnSlider" min="1" max="3" value="1" oninput="changeGridColumns(this.value)" class="cyber-slider">
-            </div>
+            <div class="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto justify-end">
+                <div class="flex items-center gap-3 bg-black/60 border border-slate-800 px-3 py-2 w-full sm:w-auto min-w-[210px]">
+                    <span class="text-[8px] pixel-font text-slate-400 whitespace-nowrap">GRID: <span id="colValue" class="text-[#7cd6ff]">1</span> COL</span>
+                    <input type="range" id="columnSlider" min="1" max="5" value="1" oninput="changeGridColumns(this.value)" class="cyber-slider">
+                </div>
 
-            <div class="flex gap-2">
-                <button onclick="openMissionsOverview()" class="pixel-btn-neon text-[9px] py-2 px-3">📋 MISSIONS</button>
-                <button onclick="openModal('addCharModal')" class="pixel-btn text-[9px] py-2 px-3">REGISTER</button>
+                <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                    <button onclick="toggleMute()" id="muteBtn" class="bg-slate-900/90 border border-slate-700 text-base p-2 w-10 h-10 flex items-center justify-center hover:border-[#7cd6ff] hover:text-[#7cd6ff] transition-colors duration-200 clickable" title="Toggle Sound">
+                        🔊
+                    </button>
+                    <button onclick="openMissionsOverview()" class="pixel-btn-neon text-[9px] h-10 px-4">📋 MISSIONS</button>
+                    <button onclick="openModal('addCharModal')" class="pixel-btn text-[9px] h-10 px-4">REGISTER</button>
+                </div>
             </div>
         </div>
 
-        <!-- รายการตัวละคร (ปรับเปลี่ยนคอลัมน์ผ่าน JavaScript) -->
-        <div class="grid grid-cols-1 gap-4" id="charactersContainer"></div>
+        <div class="grid grid-cols-1 gap-4 transition-all duration-300" id="charactersContainer"></div>
     </div>
 
-    <!-- MODAL: รายการภารกิจรวมทั้งหมด (Missions Overview) -->
-    <div id="overviewModal" class="hidden fixed inset-0 bg-black/80 flex justify-center items-center p-4 z-50">
-        <div class="pixel-box p-6 w-full max-w-lg">
-            <h3 class="text-xs font-bold text-[#39ff14] pixel-font mb-4">▶ ALL LIVE MISSIONS</h3>
-            <div class="max-h-72 overflow-y-auto space-y-2 pr-2 border-2 border-dashed border-zinc-800 p-2 bg-black/40" id="overview_list"></div>
+    <!-- MASTER POPUP CONTAINER -->
+    <div id="bottomMasterAlert">
+        <div class="p-3 bg-slate-950 border-4 border-red-500 shadow-2xl">
+            <div class="flex items-center gap-2 mb-1">
+                <span class="text-xl animate-bounce">💥</span>
+                <p id="masterAlertTitle" class="text-[10px] text-red-400 font-bold pixel-font">0 MISSIONS COMPLETED!</p>
+            </div>
+            <div id="masterAlertList" class="max-h-24 overflow-y-auto space-y-1 text-xs text-slate-300 pl-6 border-t border-slate-800/60 pt-1.5"></div>
+        </div>
+    </div>
+
+    <!-- MODAL: ALL MISSIONS OVERVIEW -->
+    <div id="overviewModal" class="hidden modal-bg fixed inset-0 bg-black/80 flex justify-center items-center p-4 z-50">
+        <div class="pixel-box p-6 w-full max-w-xl bg-[#0b0e14]">
+            <h3 class="text-xs font-bold text-[#7cd6ff] pixel-font mb-4">▶ ALL LIVE MISSIONS (DETAILED SECONDS)</h3>
+            <div class="max-h-96 overflow-y-auto space-y-2 pr-2 border-2 border-dashed border-slate-800 p-2 bg-black/40" id="overview_list"></div>
             <div class="mt-6 flex justify-end">
                 <button onclick="closeModal('overviewModal')" class="pixel-btn text-xs py-2 px-6">CLOSE</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL: เพิ่มตัวละคร -->
-    <div id="addCharModal" class="hidden fixed inset-0 bg-black/80 flex justify-center items-center p-4 z-50">
-        <div class="pixel-box p-6 w-full max-w-md">
+    <!-- MODAL: REGISTER NEW UNIT -->
+    <div id="addCharModal" class="hidden modal-bg fixed inset-0 bg-black/80 flex justify-center items-center p-4 z-50">
+        <div class="pixel-box p-6 w-full max-w-md bg-[#0b0e14]">
             <h3 class="text-xs font-bold text-white pixel-font mb-4">▶ NEW UNIT</h3>
             <div class="space-y-4">
-                <label class="block text-[10px] text-zinc-400 pixel-font">AVATAR SELECTION</label>
-                <div class="grid grid-cols-5 gap-2 p-2 bg-black/40 border-2 border-zinc-800" id="add_emoji_pool"></div>
+                <label class="block text-[10px] text-slate-400 pixel-font">AVATAR SELECTION</label>
+                <div class="grid grid-cols-5 gap-2 p-2 bg-black/40 border-2 border-slate-800" id="add_emoji_pool"></div>
                 
                 <input type="hidden" id="add_char_emoji" value="🐬">
-                <input type="text" id="add_char_name" class="w-full bg-black text-white border-4 border-zinc-800 p-3 text-sm font-bold outline-none" placeholder="UNIT NAME...">
+                <input type="text" id="add_char_name" class="w-full bg-black text-white border-2 border-slate-800 p-3 text-sm font-bold outline-none focus:border-[#7cd6ff] transition-colors" placeholder="UNIT NAME...">
                 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-[9px] text-zinc-500 pixel-font mb-1">START ENERGY</label>
-                        <input type="number" id="add_food" value="100" class="w-full bg-black text-white border-4 border-zinc-800 p-2 text-center text-sm font-bold">
+                        <label class="block text-[9px] text-slate-500 pixel-font mb-1">START ENERGY</label>
+                        <input type="number" id="add_food" value="100" class="w-full bg-black text-white border-2 border-slate-800 p-2 text-center text-sm font-bold">
                     </div>
                     <div>
-                        <label class="block text-[9px] text-zinc-500 pixel-font mb-1">START BRAIN</label>
-                        <input type="number" id="add_brain" value="0" class="w-full bg-black text-white border-4 border-zinc-800 p-2 text-center text-sm font-bold">
+                        <label class="block text-[9px] text-slate-500 pixel-font mb-1">START BRAIN</label>
+                        <input type="number" id="add_brain" value="0" class="w-full bg-black text-white border-2 border-slate-800 p-2 text-center text-sm font-bold">
                     </div>
                 </div>
             </div>
             <div class="flex gap-4 mt-6">
-                <button onclick="closeModal('addCharModal')" class="flex-1 bg-zinc-800 text-white border-4 border-black py-2 font-bold text-xs">CANCEL</button>
+                <button onclick="closeModal('addCharModal')" class="flex-1 bg-slate-800 text-white py-2 font-bold text-xs hover:bg-slate-700 transition-colors">CANCEL</button>
                 <button onclick="submitAddCharacter()" class="flex-1 pixel-btn text-xs py-2">CONFIRM</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL: แก้ไขตัวละคร -->
-    <div id="editModal" class="hidden fixed inset-0 bg-black/80 flex justify-center items-center p-4 z-50">
-        <div class="pixel-box p-6 w-full max-w-md">
+    <!-- MODAL: EDIT UNIT STATUS -->
+    <div id="editModal" class="hidden modal-bg fixed inset-0 bg-black/80 flex justify-center items-center p-4 z-50">
+        <div class="pixel-box p-6 w-full max-w-md bg-[#0b0e14]">
             <h3 class="text-xs font-bold text-white pixel-font mb-4">▶ EDIT PROFILE</h3>
             <input type="hidden" id="edit_old_id">
             <div class="space-y-4">
-                <div class="grid grid-cols-5 gap-2 p-2 bg-black/40 border-2 border-zinc-800" id="edit_emoji_pool"></div>
+                <div class="grid grid-cols-5 gap-2 p-2 bg-black/40 border-2 border-slate-800" id="edit_emoji_pool"></div>
                 <input type="hidden" id="edit_char_emoji">
-                <input type="text" id="edit_char_name" class="w-full bg-black text-white border-4 border-zinc-800 p-3 text-sm font-bold outline-none">
+                <input type="text" id="edit_char_name" class="w-full bg-black text-white border-2 border-slate-800 p-3 text-sm font-bold outline-none focus:border-[#7cd6ff] transition-colors">
                 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-[9px] text-zinc-500 pixel-font mb-1">ENERGY</label>
-                        <input type="number" step="0.1" id="edit_food" class="w-full bg-black text-white border-4 border-zinc-800 p-2 text-center text-sm font-bold">
+                        <label class="block text-[9px] text-slate-500 pixel-font mb-1">ENERGY</label>
+                        <input type="number" step="0.1" id="edit_food" class="w-full bg-black text-white border-2 border-slate-800 p-2 text-center text-sm font-bold">
                     </div>
                     <div>
-                        <label class="block text-[9px] text-zinc-500 pixel-font mb-1">BRAIN</label>
-                        <input type="number" step="0.1" id="edit_brain" class="w-full bg-black text-white border-4 border-zinc-800 p-2 text-center text-sm font-bold">
+                        <label class="block text-[9px] text-slate-500 pixel-font mb-1">BRAIN</label>
+                        <input type="number" step="0.1" id="edit_brain" class="w-full bg-black text-white border-2 border-slate-800 p-2 text-center text-sm font-bold">
                     </div>
                 </div>
             </div>
             <div class="flex gap-4 mt-6">
-                <button onclick="closeModal('editModal')" class="flex-1 bg-zinc-800 text-white border-4 border-black py-2 font-bold text-xs">CANCEL</button>
+                <button onclick="closeModal('editModal')" class="flex-1 bg-slate-800 text-white py-2 font-bold text-xs hover:bg-slate-700 transition-colors">CANCEL</button>
                 <button onclick="submitEditStatus()" class="flex-1 pixel-btn text-xs py-2">UPDATE</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL: เพิ่ม Task -->
-    <div id="afkModal" class="hidden fixed inset-0 bg-black/80 flex justify-center items-center p-4 z-50">
-        <div class="pixel-box p-6 w-full max-w-sm">
+    <!-- MODAL: ADD MISSION -->
+    <div id="afkModal" class="hidden modal-bg fixed inset-0 bg-black/80 flex justify-center items-center p-4 z-50">
+        <div class="pixel-box p-6 w-full max-w-sm bg-[#0b0e14]">
             <h3 class="text-xs font-bold text-white pixel-font mb-4">▶ ADD MISSION</h3>
             <input type="hidden" id="afk_char_name">
             <div class="space-y-4">
-                <input type="text" id="afk_task_name" class="w-full bg-black text-white border-4 border-zinc-800 p-3 text-sm outline-none" placeholder="MISSION NAME...">
-                <input type="number" id="afk_minutes" class="w-full bg-black text-white border-4 border-zinc-800 p-3 text-sm outline-none" placeholder="MINUTES...">
+                <input type="text" id="afk_task_name" class="w-full bg-black text-white border-2 border-slate-800 p-3 text-sm outline-none focus:border-[#7cd6ff] transition-colors" placeholder="MISSION NAME...">
+                <input type="number" id="afk_minutes" class="w-full bg-black text-white border-2 border-slate-800 p-3 text-sm outline-none focus:border-[#7cd6ff] transition-colors" placeholder="MINUTES...">
             </div>
             <div class="flex gap-4 mt-6">
-                <button onclick="closeModal('afkModal')" class="flex-1 bg-zinc-800 text-white border-4 border-black py-2 font-bold text-xs">CLOSE</button>
+                <button onclick="closeModal('afkModal')" class="flex-1 bg-slate-800 text-white py-2 font-bold text-xs hover:bg-slate-700 transition-colors">CLOSE</button>
                 <button onclick="submitAFK()" class="flex-1 pixel-btn text-xs py-2">START</button>
             </div>
         </div>
@@ -244,12 +346,43 @@
         let supabaseClient = null;
         let cachedCharacters = {};
         let expandedStates = {};
-        let currentCols = 1; // เริ่มต้นที่ 1 คอลัมน์
+        let currentCols = 1; 
+        
+        let isMuted = false; 
+        let completedMissionsTracker = {}; 
+
+        // ฟังก์ชันแปลงวินาทีที่เหลืออยู่ ให้แสดงเป็น "XX M XX S" หรือ "XX H XX M XX S"
+        function formatTimeWithSeconds(totalSeconds) {
+            if (totalSeconds <= 0) return 'SUCCESS';
+            const hrs = Math.floor(totalSeconds / 3600);
+            const mins = Math.floor((totalSeconds % 3600) / 60);
+            const secs = Math.floor(totalSeconds % 60);
+            
+            if (hrs > 0) {
+                return `${hrs}H ${mins}M ${secs}S`;
+            }
+            return `${mins}M ${secs}S`;
+        }
+
+        function playBeepSound() {
+            if (isMuted) return; 
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                oscillator.type = 'square';
+                oscillator.frequency.setValueAtTime(659.25, audioCtx.currentTime); 
+                gainNode.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.12);
+            } catch(e) {}
+        }
 
         window.addEventListener('DOMContentLoaded', () => {
             supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             
-            // โหลดจำนวนคอลัมน์ล่าสุดที่ผู้ใช้เคยตั้งไว้จาก LocalStorage (ถ้ามี)
             const savedCols = localStorage.getItem('afk_display_cols');
             if(savedCols) {
                 currentCols = parseInt(savedCols);
@@ -257,12 +390,23 @@
             }
             changeGridColumns(currentCols);
 
+            const savedMute = localStorage.getItem('afk_is_muted');
+            if (savedMute === 'true') {
+                isMuted = true;
+                document.getElementById('muteBtn').innerText = '🔇';
+            }
+
             fetchData();
             buildEmojiPools();
             setInterval(tick, 1000);
         });
 
-        // ฟังก์ชันสลับคอลัมน์ผ่านสไลด์บาร์
+        function toggleMute() {
+            isMuted = !isMuted;
+            localStorage.setItem('afk_is_muted', isMuted);
+            document.getElementById('muteBtn').innerText = isMuted ? '🔇' : '🔊';
+        }
+
         function changeGridColumns(val) {
             currentCols = parseInt(val);
             document.getElementById('colValue').innerText = currentCols;
@@ -270,16 +414,12 @@
 
             const container = document.getElementById('charactersContainer');
             if(container) {
-                // เคลียร์คลาสเก่าออกก่อนรันเซ็ตติ้งใหม่
-                container.classList.remove('grid-cols-1', 'sm:grid-cols-2', 'md:grid-cols-3');
-                
-                if(currentCols === 1) {
-                    container.classList.add('grid-cols-1');
-                } else if(currentCols === 2) {
-                    container.classList.add('grid-cols-1', 'sm:grid-cols-2');
-                } else if(currentCols === 3) {
-                    container.classList.add('grid-cols-1', 'sm:grid-cols-2', 'md:grid-cols-3');
-                }
+                container.classList.remove('grid-cols-1', 'sm:grid-cols-2', 'md:grid-cols-3', 'lg:grid-cols-4', 'xl:grid-cols-5');
+                if(currentCols === 1) container.classList.add('grid-cols-1');
+                else if(currentCols === 2) container.classList.add('grid-cols-1', 'sm:grid-cols-2');
+                else if(currentCols === 3) container.classList.add('grid-cols-1', 'sm:grid-cols-2', 'md:grid-cols-3');
+                else if(currentCols === 4) container.classList.add('grid-cols-1', 'sm:grid-cols-2', 'md:grid-cols-3', 'lg:grid-cols-4');
+                else if(currentCols === 5) container.classList.add('grid-cols-1', 'sm:grid-cols-2', 'md:grid-cols-3', 'lg:grid-cols-4', 'xl:grid-cols-5');
             }
         }
 
@@ -309,9 +449,21 @@
                 renderStructure();
             }
             supabaseClient.channel('db').on('postgres_changes', {event:'*', schema:'public', table:'afk_characters'}, payload => {
-                if(payload.eventType === 'DELETE') delete cachedCharacters[payload.old.id];
-                else {
+                if(payload.eventType === 'DELETE') {
+                    for (let key in completedMissionsTracker) {
+                        if (key.startsWith(payload.old.id + "_")) delete completedMissionsTracker[key];
+                    }
+                    delete cachedCharacters[payload.old.id];
+                } else {
                     const localStars = getLocalStars();
+                    const nextTimerIds = (payload.new.timers || []).map(t => t.id);
+                    for (let key in completedMissionsTracker) {
+                        if (key.startsWith(payload.new.id + "_")) {
+                            const tId = key.split('_')[1];
+                            if (!nextTimerIds.includes(tId)) delete completedMissionsTracker[key];
+                        }
+                    }
+
                     cachedCharacters[payload.new.id] = {
                         ...payload.new, 
                         timers: payload.new.timers || [],
@@ -319,6 +471,7 @@
                     };
                 }
                 renderStructure();
+                updateMasterPopupDOM();
             }).subscribe();
         }
 
@@ -356,49 +509,49 @@
                 const isStarred = char.is_starred;
                 
                 return `
-                <div id="card_${id}" class="pixel-card p-4 rounded-none ${isPaused ? 'opacity-40 bg-zinc-900/50' : 'bg-[#121216]'} ${isExpanded ? 'expanded' : 'collapsed'}">
+                <div id="card_${id}" class="pixel-card p-4 rounded-none ${isPaused ? 'opacity-40 bg-zinc-900/40' : 'bg-[#0b0e14]'} ${isExpanded ? 'expanded' : 'collapsed'}">
                     <div class="flex items-center justify-between flex-wrap gap-2">
                         <div class="flex items-center gap-3 truncate max-w-[85%]">
-                            <div onclick="openEditModal('${id}')" class="w-11 h-11 bg-zinc-900 border-2 border-zinc-700 flex items-center justify-center text-2xl flex-shrink-0 clickable hover:border-white">
+                            <div onclick="openEditModal('${id}')" class="w-11 h-11 bg-zinc-950 border-2 border-slate-800 flex items-center justify-center text-2xl flex-shrink-0 clickable hover:border-[#7cd6ff] transition-all">
                                 ${char.emoji}
                             </div>
                             <div class="truncate">
                                 <div class="flex items-center gap-2">
-                                    <button onclick="toggleStar('${id}')" class="text-xl leading-none clickable ${isStarred ? 'star-active' : 'text-zinc-700'}">★</button>
+                                    <button onclick="toggleStar('${id}')" class="text-xl leading-none clickable ${isStarred ? 'star-active' : 'text-slate-700'} transition-transform hover:scale-110">★</button>
                                     <h2 class="text-sm font-bold text-white tracking-wide truncate">${char.char_display_name}</h2>
-                                    <button onclick="togglePause('${id}')" class="w-6 h-6 flex items-center justify-center flex-shrink-0 bg-zinc-800 border border-zinc-600 text-[10px] font-bold hover:bg-zinc-700 clickable">
+                                    <button onclick="togglePause('${id}')" class="w-6 h-6 flex items-center justify-center flex-shrink-0 bg-slate-900 border border-slate-700 text-[10px] font-bold hover:bg-slate-800 hover:text-[#7cd6ff] clickable transition-colors">
                                         ${isPaused ? '▶' : '⏸'}
                                     </button>
                                 </div>
-                                <p id="death_timer_${id}" class="text-[9px] pixel-font mt-1 font-bold text-zinc-400">CALCULATING...</p>
+                                <p id="death_timer_${id}" class="text-[9px] pixel-font mt-1 font-bold text-slate-400">CALCULATING...</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-2">
-                            <button onclick="toggleExpand('${id}')" class="p-1 text-xs text-zinc-400 font-bold pixel-font clickable">${isExpanded ? '▲' : '▼'}</button>
-                            <button onclick="deleteChar('${id}')" class="text-zinc-600 hover:text-red-500 text-xs font-bold px-1">X</button>
+                            <button onclick="toggleExpand('${id}')" class="p-1 text-xs text-slate-400 font-bold pixel-font clickable hover:text-white transition-colors">${isExpanded ? '▲' : '▼'}</button>
+                            <button onclick="deleteChar('${id}')" class="text-slate-600 hover:text-red-500 text-xs font-bold px-1 transition-colors">X</button>
                         </div>
                     </div>
 
                     <div class="expand-content">
                         <div class="grid grid-cols-1 gap-3 mb-4">
-                            <div class="p-2 border border-zinc-800 bg-black/40 clickable" onclick="quickResetFood('${id}')">
+                            <div class="p-2 border border-slate-900 bg-black/40 hover:border-red-500/40 transition-colors clickable" onclick="quickResetFood('${id}')">
                                 <div class="flex justify-between text-[9px] pixel-font text-red-400 mb-1">
                                     <span>HP:ENERGY</span> <span id="tf_${id}">0.0%</span>
                                 </div>
-                                <div class="rpg-bar-container"><div id="bf_${id}" class="h-full bar-energy transition-all duration-1000"></div></div>
+                                <div class="rpg-bar-container"><div id="bf_${id}" class="h-full bar-energy transition-all duration-500"></div></div>
                             </div>
-                            <div class="p-2 border border-zinc-800 bg-black/40 clickable" onclick="quickResetBrain('${id}')">
+                            <div class="p-2 border border-slate-900 bg-black/40 hover:border-sky-500/40 transition-colors clickable" onclick="quickResetBrain('${id}')">
                                 <div class="flex justify-between text-[9px] pixel-font text-sky-400 mb-1">
                                     <span>MP:BRAIN</span> <span id="tb_${id}">0.0%</span>
                                 </div>
-                                <div class="rpg-bar-container"><div id="bb_${id}" class="h-full bar-brain transition-all duration-1000"></div></div>
+                                <div class="rpg-bar-container"><div id="bb_${id}" class="h-full bar-brain transition-all duration-500"></div></div>
                             </div>
                         </div>
                         
-                        <div class="border-t border-dashed border-zinc-800 pt-3">
+                        <div class="border-t border-dashed border-slate-800 pt-3">
                             <div class="flex justify-between items-center mb-2">
-                                <span class="text-[9px] pixel-font text-zinc-400">MISSIONS LIST</span>
-                                <button onclick="openAFKModal('${id}')" class="bg-zinc-800 text-white text-[9px] border border-zinc-600 px-2 py-0.5 clickable">+ ADD</button>
+                                <span class="text-[9px] pixel-font text-slate-500">MISSIONS LIST</span>
+                                <button onclick="openAFKModal('${id}')" class="bg-slate-900 text-slate-300 text-[9px] border border-slate-700 px-2 py-0.5 hover:text-white hover:border-[#7cd6ff] clickable transition-all">+ ADD</button>
                             </div>
                             <div id="timers_${id}" class="space-y-2"></div>
                         </div>
@@ -406,12 +559,12 @@
                 </div>`;
             }).join('');
             
-            // เรียกซ้ำเพื่อให้คลาส Column ไม่โดนเรนเดอร์ทับหายไป
             changeGridColumns(currentCols);
         }
 
         function tick() {
             const now = Date.now() / 1000;
+            let newlyCompletedFound = false;
 
             for (const id in cachedCharacters) {
                 const char = cachedCharacters[id];
@@ -426,7 +579,7 @@
                 if (elDeath) {
                     if (char.is_paused) {
                         elDeath.innerText = "⏸ PAUSED";
-                        elDeath.className = "text-[9px] pixel-font mt-1 text-zinc-500";
+                        elDeath.className = "text-[9px] pixel-font mt-1 text-slate-500";
                     } else if (f <= 0) {
                         elDeath.innerText = "💀 DIED (0%)";
                         elDeath.className = "text-[9px] pixel-font mt-1 text-red-500 animate-pulse";
@@ -434,12 +587,13 @@
                         const remSec = f / FOOD_DECAY;
                         const hrs = Math.floor(remSec / 3600);
                         const mins = Math.floor((remSec % 3600) / 60);
-                        elDeath.innerText = `💀 DIE IN ${hrs}h ${mins}m`;
+                        const secs = Math.floor(remSec % 60);
+                        elDeath.innerText = `💀 DIE IN ${hrs}h ${mins}m ${secs}s`;
                         
                         if (remSec < 900) {
                             elDeath.className = "text-[9px] pixel-font mt-1 text-red-400 font-bold animate-bounce";
                         } else {
-                            elDeath.className = "text-[9px] pixel-font mt-1 text-[#39ff14]";
+                            elDeath.className = "text-[9px] pixel-font mt-1 text-[#7cd6ff]";
                         }
                     }
                 }
@@ -454,20 +608,75 @@
                     const tContainer = document.getElementById(`timers_${id}`);
                     if(char.timers.length > 0) {
                         tContainer.innerHTML = char.timers.map(t => {
-                            const rem = char.is_paused ? 'PAUSED' : Math.max(0, Math.ceil((t.target_time - now)/60)) + ' M';
+                            let remStr = "";
+                            let isDone = false;
+                            
+                            if (char.is_paused) {
+                                remStr = 'PAUSED';
+                            } else {
+                                const left = t.target_time - now;
+                                if (left <= 0) {
+                                    remStr = 'SUCCESS';
+                                    isDone = true;
+                                    
+                                    const trackerKey = `${char.id}_${t.id}`;
+                                    if (!completedMissionsTracker[trackerKey]) {
+                                        completedMissionsTracker[trackerKey] = {
+                                            charName: char.char_display_name,
+                                            charEmoji: char.emoji,
+                                            itemName: t.item_name
+                                        };
+                                        newlyCompletedFound = true; 
+                                    }
+                                } else {
+                                    remStr = formatTimeWithSeconds(left); // เปลี่ยนมาใช้ฟังก์ชันแบบมีวินาทีที่นี่
+                                }
+                            }
+                            
                             return `
-                            <div class="p-2 bg-black/60 border border-zinc-800 flex justify-between items-center">
-                                <span class="text-xs font-bold text-zinc-400 truncate pr-2">▪ ${t.item_name}</span>
+                            <div class="p-2 bg-black/60 border ${isDone ? 'border-red-500 bg-red-950/20' : 'border-slate-900'} flex justify-between items-center transition-all duration-300">
+                                <span class="text-xs font-bold ${isDone ? 'text-red-400 animate-pulse' : 'text-slate-400'} truncate pr-2">▪ ${t.item_name}</span>
                                 <div class="flex items-center gap-2">
-                                    <span class="text-[9px] bg-zinc-800 text-white px-1.5 py-0.5 border border-zinc-700">${rem}</span>
-                                    <button onclick="deleteActivity('${id}', '${t.id}')" class="text-zinc-600 hover:text-white font-bold px-1 text-xs">✕</button>
+                                    <span class="text-[9px] ${isDone ? 'bg-red-600 text-white animate-pulse' : 'bg-slate-800 text-white'} px-1.5 py-0.5 border border-slate-700 font-mono">${remStr}</span>
+                                    <button onclick="deleteActivity('${id}', '${t.id}')" class="text-slate-600 hover:text-white font-bold px-1 text-xs transition-colors">✕</button>
                                 </div>
                             </div>`;
                         }).join('');
-                    } else { tContainer.innerHTML = '<p class="text-[9px] text-zinc-600 italic">No live mission...</p>'; }
+                    } else { tContainer.innerHTML = '<p class="text-[9px] text-slate-700 italic">No live mission...</p>'; }
                 }
             }
+
+            if (newlyCompletedFound) {
+                playBeepSound();
+            }
+            updateMasterPopupDOM();
             updateMissionsOverviewLive();
+        }
+
+        function updateMasterPopupDOM() {
+            const popupEl = document.getElementById('bottomMasterAlert');
+            const titleEl = document.getElementById('masterAlertTitle');
+            const listEl = document.getElementById('masterAlertList');
+            
+            const totalDone = Object.keys(completedMissionsTracker).length;
+            
+            if (totalDone === 0) {
+                popupEl.style.display = 'none';
+                return;
+            }
+            
+            titleEl.innerText = `${totalDone} MISSION${totalDone > 1 ? 'S' : ''} COMPLETED!`;
+            
+            let listHTML = "";
+            for (let key in completedMissionsTracker) {
+                const data = completedMissionsTracker[key];
+                listHTML += `<div class="truncate font-semibold text-slate-300 py-0.5 border-b border-slate-900/30">
+                    ${data.charEmoji} <span class="text-white">${data.itemName}</span> 
+                    <span class="text-[9px] text-slate-500 pixel-font">(${data.charName})</span>
+                </div>`;
+            }
+            listEl.innerHTML = listHTML;
+            popupEl.style.display = 'block';
         }
 
         function openMissionsOverview() {
@@ -485,7 +694,19 @@
             for (const charId in cachedCharacters) {
                 const char = cachedCharacters[charId];
                 char.timers.forEach(t => {
-                    const remSec = char.is_paused ? (t.saved_remaining_sec || 0) : Math.max(0, t.target_time - now);
+                    let remSec = 0;
+                    let isDone = false;
+                    
+                    if (char.is_paused) {
+                        remSec = t.saved_remaining_sec || 0;
+                    } else {
+                        remSec = t.target_time - now;
+                        if (remSec <= 0) {
+                            remSec = 0; 
+                            isDone = true;
+                        }
+                    }
+                    
                     allMissions.push({
                         charName: char.char_display_name,
                         charEmoji: char.emoji,
@@ -493,32 +714,41 @@
                         missionId: t.id,
                         itemName: t.item_name,
                         remSec: remSec,
-                        isPaused: char.is_paused
+                        isPaused: char.is_paused,
+                        isDone: isDone
                     });
                 });
             }
 
-            allMissions.sort((a, b) => a.remSec - b.remSec);
+            allMissions.sort((a, b) => {
+                if (a.isDone && !b.isDone) return -1;
+                if (!a.isDone && b.isDone) return 1;
+                return a.remSec - b.remSec;
+            });
 
             if (allMissions.length === 0) {
-                overviewContainer.innerHTML = '<p class="text-xs text-zinc-600 text-center py-4 pixel-font">NO ACTIVE MISSIONS AT ALL</p>';
+                overviewContainer.innerHTML = '<p class="text-xs text-slate-600 text-center py-4 pixel-font">NO ACTIVE MISSIONS AT ALL</p>';
                 return;
             }
 
             overviewContainer.innerHTML = allMissions.map(m => {
-                const displayTime = m.isPaused ? 'PAUSED' : Math.ceil(m.remSec / 60) + ' MINS';
+                let displayTime = "";
+                if (m.isPaused) displayTime = 'PAUSED';
+                else if (m.isDone) displayTime = '[ SUCCESS ]';
+                else displayTime = formatTimeWithSeconds(m.remSec); // เปลี่ยนมาใช้ฟังก์ชันแบบมีวินาทีที่นี่เช่นกัน
+                
                 return `
-                <div class="p-2 bg-zinc-900/80 border border-zinc-700 flex justify-between items-center gap-2">
+                <div class="p-2 border flex justify-between items-center gap-2 ${m.isDone ? 'bg-red-950/40 border-red-500' : 'bg-slate-900/80 border-slate-800'} transition-all">
                     <div class="flex items-center gap-2 truncate">
                         <span class="text-lg">${m.charEmoji}</span>
                         <div class="truncate">
-                            <p class="text-[10px] font-bold text-white truncate">${m.itemName}</p>
-                            <p class="text-[8px] text-zinc-500 uppercase pixel-font tracking-tighter">Owner: ${m.charName}</p>
+                            <p class="text-[10px] font-bold text-white truncate ${m.isDone ? 'text-red-400 animate-pulse' : ''}">${m.itemName}</p>
+                            <p class="text-[8px] text-slate-500 uppercase pixel-font tracking-tighter">Owner: ${m.charName}</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-2 flex-shrink-0">
-                        <span class="text-[9px] pixel-font ${m.remSec <= 120 && !m.isPaused ? 'text-yellow-400 animate-pulse' : 'text-zinc-300'} bg-black px-1.5 py-0.5 border border-zinc-800">${displayTime}</span>
-                        <button onclick="deleteActivity('${m.charId}', '${m.missionId}')" class="text-rose-500 font-bold text-xs px-1 hover:text-white">✕</button>
+                        <span class="text-[9px] pixel-font font-mono ${m.isDone ? 'text-red-400 font-bold bg-red-900 border-red-500 animate-pulse' : (m.remSec <= 60 && !m.isPaused ? 'text-yellow-400 animate-pulse bg-black border-slate-800' : 'text-slate-300 bg-black border-slate-800')} px-1.5 py-0.5 border">${displayTime}</span>
+                        <button onclick="deleteActivity('${m.charId}', '${m.missionId}')" class="text-rose-500 font-bold text-xs px-1 hover:text-white transition-colors">✕</button>
                     </div>
                 </div>`;
             }).join('');
@@ -537,7 +767,7 @@
                 brain_base: currentBrain,
                 status_updated_at: now
             }).eq('id', id); 
-            setTimeout(renderStructure, 500); 
+            setTimeout(renderStructure, 300); 
         }
 
         async function quickResetBrain(id) { 
@@ -557,7 +787,12 @@
 
         async function deleteActivity(charId, timerId) {
             const char = cachedCharacters[charId];
+            if (!char) return;
             const updatedTimers = char.timers.filter(t => t.id !== timerId);
+            
+            const trackerKey = `${charId}_${timerId}`;
+            delete completedMissionsTracker[trackerKey];
+
             await supabaseClient.from('afk_characters').update({ timers: updatedTimers }).eq('id', charId);
         }
 
@@ -592,13 +827,21 @@
             }
             updates.timers = char.timers;
             await supabaseClient.from('afk_characters').update(updates).eq('id', id);
-            setTimeout(renderStructure, 300);
+            setTimeout(renderStructure, 100);
         }
 
         async function deleteChar(id) { if(confirm("DELETE UNIT?")) await supabaseClient.from('afk_characters').delete().eq('id', id); }
 
-        function openModal(m) { document.getElementById(m).classList.remove('hidden'); }
-        function closeModal(m) { document.getElementById(m).classList.add('hidden'); }
+        function openModal(m) { 
+            const modal = document.getElementById(m);
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.style.opacity = "1", 10);
+        }
+        function closeModal(m) { 
+            const modal = document.getElementById(m);
+            modal.style.opacity = "0";
+            setTimeout(() => modal.classList.add('hidden'), 200);
+        }
         
         function openEditModal(id) {
             const char = cachedCharacters[id];
@@ -640,7 +883,7 @@
                 const pool = document.getElementById(pId);
                 pool.innerHTML = EMOJIS.map(e => `
                     <button type="button" onclick="${pId.startsWith('add') ? 'setEmoji' : 'setEditEmoji'}('${e}', this)" 
-                            class="emoji-btn p-2 text-xl hover:bg-zinc-800 flex items-center justify-center">
+                            class="emoji-btn p-2 text-xl flex items-center justify-center clickable">
                         ${e}
                     </button>
                 `).join('');

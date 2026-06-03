@@ -3,18 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>👾 AFK DASHBOARD - NIGHT BLUE MONITOR</title>
+    <title>👾 AFK DASHBOARD - DARK MINIMAL MONITOR</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Mitr:wght@300;400;600&display=swap" rel="stylesheet">
     
     <style>
         :root { 
-            --bg-main: #06080c;
-            --border-main: #7cd6ff; 
-            --card-bg: #0b0e14;
-            --cyber-blue: #00bfff;
-            --cyber-glow: rgba(124, 214, 255, 0.15); 
+            --bg-main: #09090b; /* เทาเข้มเกือบดำ */
+            --border-main: #a1a1aa; /* สีเทาอ่อนถนอมสายตา */
+            --card-bg: #121214; /* สีพื้นหลังการ์ดเทาเข้ม */
+            --text-muted: #71717a;
         }
         
         html {
@@ -23,10 +22,10 @@
 
         body { 
             background-color: var(--bg-main); 
-            color: #e2e8f0; 
+            color: #e4e4e7; 
             font-family: 'Mitr', sans-serif;
             image-rendering: pixelated;
-            background-image: linear-gradient(rgba(15, 23, 42, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(15, 23, 42, 0.5) 1px, transparent 1px);
+            background-image: linear-gradient(rgba(24, 24, 27, 0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(24, 24, 27, 0.6) 1px, transparent 1px);
             background-size: 20px 20px;
         }
 
@@ -34,10 +33,10 @@
             font-family: 'Press Start 2P', cursive;
         }
         
+        /* สไตล์ Header ธีมเทาเข้ม สบายตาตอนกลางคืน */
         .cyber-header {
-            background: linear-gradient(135deg, #0b0e14 0%, #111622 100%);
+            background: linear-gradient(135deg, #121214 0%, #18181b 100%);
             border: 3px solid var(--border-main);
-            box-shadow: 0 0 12px var(--cyber-glow), inset 0 0 8px rgba(124, 214, 255, 0.05);
             position: relative;
             overflow: hidden;
         }
@@ -46,7 +45,7 @@
             position: absolute;
             top: 0; left: 0; right: 0; height: 2px;
             background: linear-gradient(90deg, transparent, var(--border-main), transparent);
-            animation: scanline 5s linear infinite; 
+            animation: scanline 7s linear infinite; /* วิ่งช้าเนิบๆ ไม่กวนสายตา */
         }
 
         @keyframes scanline {
@@ -56,34 +55,34 @@
 
         .pixel-box {
             background: var(--card-bg);
-            border: 3px solid #1a2233;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            border: 3px solid #27272a;
         }
 
+        /* ปรับปรุงการ์ดให้เป็นโทนคลาสสิกมืด */
         .pixel-card {
-            background: #0b0e14;
-            border: 3px solid #161f30;
+            background: #121214;
+            border: 3px solid #202024;
             box-shadow: 6px 6px 0px #000000;
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
         .pixel-card:hover {
             border-color: var(--border-main);
-            box-shadow: 6px 6px 0px var(--cyber-glow);
             transform: translateY(-2px);
         }
         
+        /* ปุ่มกดดีไซน์โมโนโครม */
         .pixel-btn {
-            background: #ffffff;
-            color: #000000;
+            background: #e4e4e7;
+            color: #09090b;
             border: 3px solid #000000;
-            box-shadow: 0px 4px 0px #1a2233;
+            box-shadow: 0px 4px 0px #27272a;
             font-family: 'Press Start 2P', cursive;
             cursor: pointer;
             transition: all 0.2s ease;
         }
         .pixel-btn:hover {
-            background: #7cd6ff;
-            box-shadow: 0px 4px 0px #0b4d6e;
+            background: #a1a1aa;
+            box-shadow: 0px 4px 0px #52525b;
         }
         .pixel-btn:active {
             transform: translateY(4px);
@@ -91,30 +90,30 @@
         }
 
         .pixel-btn-neon {
-            background: #0f1420;
-            color: #7cd6ff;
-            border: 3px solid #7cd6ff;
-            box-shadow: 0px 4px 0px #0b4d6e;
+            background: #18181b;
+            color: #a1a1aa;
+            border: 3px solid #a1a1aa;
+            box-shadow: 0px 4px 0px #3f3f46;
             transition: all 0.2s ease;
         }
         .pixel-btn-neon:hover {
-            background: #7cd6ff;
-            color: #000000;
-            box-shadow: 0 0 8px var(--cyber-glow);
+            background: #a1a1aa;
+            color: #09090b;
         }
         .pixel-btn-neon:active {
             transform: translateY(4px);
             box-shadow: 0px 0px 0px #000000;
         }
         
+        /* RPG Bars */
         .rpg-bar-container { 
             background: #000000; 
             height: 16px; 
-            border: 2px solid #1a2233;
+            border: 2px solid #27272a;
             padding: 1px;
         }
-        .bar-energy { background: #ff4a4a; box-shadow: 0 0 6px rgba(255, 74, 74, 0.4); }
-        .bar-brain { background: #00bfff; box-shadow: 0 0 6px rgba(0, 191, 255, 0.4); }
+        .bar-energy { background: #b91c1c; } /* แดงเข้มหม่นลงไม่แสบตา */
+        .bar-brain { background: #52525b; } /* สมองเปลี่ยนเป็นสีเทาเข้มคูลๆ */
 
         .clickable { cursor: pointer; }
 
@@ -132,23 +131,23 @@
 
         .emoji-btn { 
             border: 3px solid transparent; 
-            background: #111622;
+            background: #18181b;
             transition: all 0.2s ease;
         }
-        .emoji-btn:hover { border-color: #44526e; }
+        .emoji-btn:hover { border-color: #3f3f46; }
         .emoji-btn.selected { 
             border-color: var(--border-main); 
-            background: #ffffff;
+            background: #e4e4e7;
         }
         
-        .star-active { color: #ffd700; text-shadow: 0 0 8px #ffd700; }
+        .star-active { color: #ccaf00; }
 
         .cyber-slider {
             -webkit-appearance: none;
             width: 100%;
             height: 6px;
-            background: #161f30;
-            border: 1px solid #2a374e;
+            background: #202024;
+            border: 1px solid #3f3f46;
             outline: none;
             border-radius: 3px;
         }
@@ -157,10 +156,9 @@
             appearance: none;
             width: 14px;
             height: 14px;
-            background: #7cd6ff;
+            background: #a1a1aa;
             border: 2px solid #000;
             cursor: pointer;
-            box-shadow: 0 0 6px #7cd6ff;
             transition: transform 0.1s ease;
         }
         .cyber-slider::-webkit-slider-thumb:hover {
@@ -191,12 +189,12 @@
         }
 
         .live-pulse {
-            animation: pulse-blue 2.5s infinite;
+            animation: pulse-gray 2.5s infinite;
         }
-        @keyframes pulse-blue {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(124, 214, 255, 0.5); }
-            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(124, 214, 255, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(124, 214, 255, 0); }
+        @keyframes pulse-gray {
+            0% { transform: scale(0.95); opacity: 0.4; }
+            70% { transform: scale(1); opacity: 0.9; }
+            100% { transform: scale(0.95); opacity: 0.4; }
         }
     </style>
 </head>
@@ -207,29 +205,29 @@
         <!-- HEADER ZONE -->
         <div class="cyber-header p-5 md:p-6 flex flex-col lg:flex-row justify-between items-center gap-6 rounded-none">
             <div class="flex items-center gap-4 w-full lg:w-auto">
-                <div class="w-12 h-12 bg-[#7cd6ff] text-black flex items-center justify-center text-2xl font-bold shadow-[0_0_10px_var(--cyber-glow)]">
+                <div class="w-12 h-12 bg-[#a1a1aa] text-black flex items-center justify-center text-2xl font-bold">
                     🤖
                 </div>
                 <div>
                     <div class="flex items-center gap-3">
                         <h1 class="text-lg md:text-xl font-bold text-white pixel-font tracking-wider">AFK DASHBOARD</h1>
                         <span class="flex h-2.5 w-2.5 relative">
-                            <span class="live-pulse absolute inline-flex h-full w-full rounded-full bg-[#7cd6ff] opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#7cd6ff]"></span>
+                            <span class="live-pulse absolute inline-flex h-full w-full rounded-full bg-[#a1a1aa] opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#a1a1aa]"></span>
                         </span>
                     </div>
-                    <p class="text-[9px] text-slate-400 pixel-font mt-1.5 tracking-widest uppercase">Multi-Bot Status Control Unit</p>
+                    <p class="text-[9px] text-zinc-500 pixel-font mt-1.5 tracking-widest uppercase">Multi-Bot Status Control Unit</p>
                 </div>
             </div>
 
             <div class="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto justify-end">
-                <div class="flex items-center gap-3 bg-black/60 border border-slate-800 px-3 py-2 w-full sm:w-auto min-w-[210px]">
-                    <span class="text-[8px] pixel-font text-slate-400 whitespace-nowrap">GRID: <span id="colValue" class="text-[#7cd6ff]">1</span> COL</span>
+                <div class="flex items-center gap-3 bg-black/60 border border-zinc-800 px-3 py-2 w-full sm:w-auto min-w-[210px]">
+                    <span class="text-[8px] pixel-font text-zinc-500 whitespace-nowrap">GRID: <span id="colValue" class="text-[#a1a1aa]">1</span> COL</span>
                     <input type="range" id="columnSlider" min="1" max="5" value="1" oninput="changeGridColumns(this.value)" class="cyber-slider">
                 </div>
 
                 <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
-                    <button onclick="toggleMute()" id="muteBtn" class="bg-slate-900/90 border border-slate-700 text-base p-2 w-10 h-10 flex items-center justify-center hover:border-[#7cd6ff] hover:text-[#7cd6ff] transition-colors duration-200 clickable" title="Toggle Sound">
+                    <button onclick="toggleMute()" id="muteBtn" class="bg-zinc-900/90 border border-zinc-700 text-base p-2 w-10 h-10 flex items-center justify-center hover:border-[#a1a1aa] hover:text-[#a1a1aa] transition-colors duration-200 clickable" title="Toggle Sound">
                         🔊
                     </button>
                     <button onclick="openMissionsOverview()" class="pixel-btn-neon text-[9px] h-10 px-4">📋 MISSIONS</button>
@@ -243,20 +241,20 @@
 
     <!-- MASTER POPUP CONTAINER -->
     <div id="bottomMasterAlert">
-        <div class="p-3 bg-slate-950 border-4 border-red-500 shadow-2xl">
+        <div class="p-3 bg-zinc-950 border-4 border-zinc-500 shadow-2xl">
             <div class="flex items-center gap-2 mb-1">
                 <span class="text-xl animate-bounce">💥</span>
-                <p id="masterAlertTitle" class="text-[10px] text-red-400 font-bold pixel-font">0 MISSIONS COMPLETED!</p>
+                <p id="masterAlertTitle" class="text-[10px] text-zinc-400 font-bold pixel-font">0 MISSIONS COMPLETED!</p>
             </div>
-            <div id="masterAlertList" class="max-h-24 overflow-y-auto space-y-1 text-xs text-slate-300 pl-6 border-t border-slate-800/60 pt-1.5"></div>
+            <div id="masterAlertList" class="max-h-24 overflow-y-auto space-y-1 text-xs text-zinc-300 pl-6 border-t border-zinc-800/60 pt-1.5"></div>
         </div>
     </div>
 
     <!-- MODAL: ALL MISSIONS OVERVIEW -->
     <div id="overviewModal" class="hidden modal-bg fixed inset-0 bg-black/80 flex justify-center items-center p-4 z-50">
-        <div class="pixel-box p-6 w-full max-w-xl bg-[#0b0e14]">
-            <h3 class="text-xs font-bold text-[#7cd6ff] pixel-font mb-4">▶ ALL LIVE MISSIONS (DETAILED SECONDS)</h3>
-            <div class="max-h-96 overflow-y-auto space-y-2 pr-2 border-2 border-dashed border-slate-800 p-2 bg-black/40" id="overview_list"></div>
+        <div class="pixel-box p-6 w-full max-w-xl bg-[#121214]">
+            <h3 class="text-xs font-bold text-[#a1a1aa] pixel-font mb-4">▶ ALL LIVE MISSIONS (DETAILED SECONDS)</h3>
+            <div class="max-h-96 overflow-y-auto space-y-2 pr-2 border-2 border-dashed border-zinc-800 p-2 bg-black/40" id="overview_list"></div>
             <div class="mt-6 flex justify-end">
                 <button onclick="closeModal('overviewModal')" class="pixel-btn text-xs py-2 px-6">CLOSE</button>
             </div>
@@ -265,28 +263,28 @@
 
     <!-- MODAL: REGISTER NEW UNIT -->
     <div id="addCharModal" class="hidden modal-bg fixed inset-0 bg-black/80 flex justify-center items-center p-4 z-50">
-        <div class="pixel-box p-6 w-full max-w-md bg-[#0b0e14]">
+        <div class="pixel-box p-6 w-full max-w-md bg-[#121214]">
             <h3 class="text-xs font-bold text-white pixel-font mb-4">▶ NEW UNIT</h3>
             <div class="space-y-4">
-                <label class="block text-[10px] text-slate-400 pixel-font">AVATAR SELECTION</label>
-                <div class="grid grid-cols-5 gap-2 p-2 bg-black/40 border-2 border-slate-800" id="add_emoji_pool"></div>
+                <label class="block text-[10px] text-zinc-400 pixel-font">AVATAR SELECTION</label>
+                <div class="grid grid-cols-5 gap-2 p-2 bg-black/40 border-2 border-zinc-800" id="add_emoji_pool"></div>
                 
                 <input type="hidden" id="add_char_emoji" value="🐬">
-                <input type="text" id="add_char_name" class="w-full bg-black text-white border-2 border-slate-800 p-3 text-sm font-bold outline-none focus:border-[#7cd6ff] transition-colors" placeholder="UNIT NAME...">
+                <input type="text" id="add_char_name" class="w-full bg-black text-white border-2 border-zinc-800 p-3 text-sm font-bold outline-none focus:border-[#a1a1aa] transition-colors" placeholder="UNIT NAME...">
                 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-[9px] text-slate-500 pixel-font mb-1">START ENERGY</label>
-                        <input type="number" id="add_food" value="100" class="w-full bg-black text-white border-2 border-slate-800 p-2 text-center text-sm font-bold">
+                        <label class="block text-[9px] text-zinc-500 pixel-font mb-1">START ENERGY</label>
+                        <input type="number" id="add_food" value="100" class="w-full bg-black text-white border-2 border-zinc-800 p-2 text-center text-sm font-bold">
                     </div>
                     <div>
-                        <label class="block text-[9px] text-slate-500 pixel-font mb-1">START BRAIN</label>
-                        <input type="number" id="add_brain" value="0" class="w-full bg-black text-white border-2 border-slate-800 p-2 text-center text-sm font-bold">
+                        <label class="block text-[9px] text-zinc-500 pixel-font mb-1">START BRAIN</label>
+                        <input type="number" id="add_brain" value="0" class="w-full bg-black text-white border-2 border-zinc-800 p-2 text-center text-sm font-bold">
                     </div>
                 </div>
             </div>
             <div class="flex gap-4 mt-6">
-                <button onclick="closeModal('addCharModal')" class="flex-1 bg-slate-800 text-white py-2 font-bold text-xs hover:bg-slate-700 transition-colors">CANCEL</button>
+                <button onclick="closeModal('addCharModal')" class="flex-1 bg-zinc-800 text-white py-2 font-bold text-xs hover:bg-zinc-700 transition-colors">CANCEL</button>
                 <button onclick="submitAddCharacter()" class="flex-1 pixel-btn text-xs py-2">CONFIRM</button>
             </div>
         </div>
@@ -294,27 +292,27 @@
 
     <!-- MODAL: EDIT UNIT STATUS -->
     <div id="editModal" class="hidden modal-bg fixed inset-0 bg-black/80 flex justify-center items-center p-4 z-50">
-        <div class="pixel-box p-6 w-full max-w-md bg-[#0b0e14]">
+        <div class="pixel-box p-6 w-full max-w-md bg-[#121214]">
             <h3 class="text-xs font-bold text-white pixel-font mb-4">▶ EDIT PROFILE</h3>
             <input type="hidden" id="edit_old_id">
             <div class="space-y-4">
-                <div class="grid grid-cols-5 gap-2 p-2 bg-black/40 border-2 border-slate-800" id="edit_emoji_pool"></div>
+                <div class="grid grid-cols-5 gap-2 p-2 bg-black/40 border-2 border-zinc-800" id="edit_emoji_pool"></div>
                 <input type="hidden" id="edit_char_emoji">
-                <input type="text" id="edit_char_name" class="w-full bg-black text-white border-2 border-slate-800 p-3 text-sm font-bold outline-none focus:border-[#7cd6ff] transition-colors">
+                <input type="text" id="edit_char_name" class="w-full bg-black text-white border-2 border-zinc-800 p-3 text-sm font-bold outline-none focus:border-[#a1a1aa] transition-colors">
                 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-[9px] text-slate-500 pixel-font mb-1">ENERGY</label>
-                        <input type="number" step="0.1" id="edit_food" class="w-full bg-black text-white border-2 border-slate-800 p-2 text-center text-sm font-bold">
+                        <label class="block text-[9px] text-zinc-500 pixel-font mb-1">ENERGY</label>
+                        <input type="number" step="0.1" id="edit_food" class="w-full bg-black text-white border-2 border-zinc-800 p-2 text-center text-sm font-bold">
                     </div>
                     <div>
-                        <label class="block text-[9px] text-slate-500 pixel-font mb-1">BRAIN</label>
-                        <input type="number" step="0.1" id="edit_brain" class="w-full bg-black text-white border-2 border-slate-800 p-2 text-center text-sm font-bold">
+                        <label class="block text-[9px] text-zinc-500 pixel-font mb-1">BRAIN</label>
+                        <input type="number" step="0.1" id="edit_brain" class="w-full bg-black text-white border-2 border-zinc-800 p-2 text-center text-sm font-bold">
                     </div>
                 </div>
             </div>
             <div class="flex gap-4 mt-6">
-                <button onclick="closeModal('editModal')" class="flex-1 bg-slate-800 text-white py-2 font-bold text-xs hover:bg-slate-700 transition-colors">CANCEL</button>
+                <button onclick="closeModal('editModal')" class="flex-1 bg-zinc-800 text-white py-2 font-bold text-xs hover:bg-zinc-700 transition-colors">CANCEL</button>
                 <button onclick="submitEditStatus()" class="flex-1 pixel-btn text-xs py-2">UPDATE</button>
             </div>
         </div>
@@ -322,15 +320,15 @@
 
     <!-- MODAL: ADD MISSION -->
     <div id="afkModal" class="hidden modal-bg fixed inset-0 bg-black/80 flex justify-center items-center p-4 z-50">
-        <div class="pixel-box p-6 w-full max-w-sm bg-[#0b0e14]">
+        <div class="pixel-box p-6 w-full max-w-sm bg-[#121214]">
             <h3 class="text-xs font-bold text-white pixel-font mb-4">▶ ADD MISSION</h3>
             <input type="hidden" id="afk_char_name">
             <div class="space-y-4">
-                <input type="text" id="afk_task_name" class="w-full bg-black text-white border-2 border-slate-800 p-3 text-sm outline-none focus:border-[#7cd6ff] transition-colors" placeholder="MISSION NAME...">
-                <input type="number" id="afk_minutes" class="w-full bg-black text-white border-2 border-slate-800 p-3 text-sm outline-none focus:border-[#7cd6ff] transition-colors" placeholder="MINUTES...">
+                <input type="text" id="afk_task_name" class="w-full bg-black text-white border-2 border-zinc-800 p-3 text-sm outline-none focus:border-[#a1a1aa] transition-colors" placeholder="MISSION NAME...">
+                <input type="number" id="afk_minutes" class="w-full bg-black text-white border-2 border-zinc-800 p-3 text-sm outline-none focus:border-[#a1a1aa] transition-colors" placeholder="MINUTES...">
             </div>
             <div class="flex gap-4 mt-6">
-                <button onclick="closeModal('afkModal')" class="flex-1 bg-slate-800 text-white py-2 font-bold text-xs hover:bg-slate-700 transition-colors">CLOSE</button>
+                <button onclick="closeModal('afkModal')" class="flex-1 bg-zinc-800 text-white py-2 font-bold text-xs hover:bg-zinc-700 transition-colors">CLOSE</button>
                 <button onclick="submitAFK()" class="flex-1 pixel-btn text-xs py-2">START</button>
             </div>
         </div>
@@ -351,7 +349,6 @@
         let isMuted = false; 
         let completedMissionsTracker = {}; 
 
-        // ฟังก์ชันแปลงวินาทีที่เหลืออยู่ ให้แสดงเป็น "XX M XX S" หรือ "XX H XX M XX S"
         function formatTimeWithSeconds(totalSeconds) {
             if (totalSeconds <= 0) return 'SUCCESS';
             const hrs = Math.floor(totalSeconds / 3600);
@@ -509,49 +506,49 @@
                 const isStarred = char.is_starred;
                 
                 return `
-                <div id="card_${id}" class="pixel-card p-4 rounded-none ${isPaused ? 'opacity-40 bg-zinc-900/40' : 'bg-[#0b0e14]'} ${isExpanded ? 'expanded' : 'collapsed'}">
+                <div id="card_${id}" class="pixel-card p-4 rounded-none ${isPaused ? 'opacity-40 bg-zinc-900/40' : 'bg-[#121214]'} ${isExpanded ? 'expanded' : 'collapsed'}">
                     <div class="flex items-center justify-between flex-wrap gap-2">
                         <div class="flex items-center gap-3 truncate max-w-[85%]">
-                            <div onclick="openEditModal('${id}')" class="w-11 h-11 bg-zinc-950 border-2 border-slate-800 flex items-center justify-center text-2xl flex-shrink-0 clickable hover:border-[#7cd6ff] transition-all">
+                            <div onclick="openEditModal('${id}')" class="w-11 h-11 bg-zinc-950 border-2 border-zinc-800 flex items-center justify-center text-2xl flex-shrink-0 clickable hover:border-[#a1a1aa] transition-all">
                                 ${char.emoji}
                             </div>
                             <div class="truncate">
                                 <div class="flex items-center gap-2">
-                                    <button onclick="toggleStar('${id}')" class="text-xl leading-none clickable ${isStarred ? 'star-active' : 'text-slate-700'} transition-transform hover:scale-110">★</button>
+                                    <button onclick="toggleStar('${id}')" class="text-xl leading-none clickable ${isStarred ? 'star-active' : 'text-zinc-700'} transition-transform hover:scale-110">★</button>
                                     <h2 class="text-sm font-bold text-white tracking-wide truncate">${char.char_display_name}</h2>
-                                    <button onclick="togglePause('${id}')" class="w-6 h-6 flex items-center justify-center flex-shrink-0 bg-slate-900 border border-slate-700 text-[10px] font-bold hover:bg-slate-800 hover:text-[#7cd6ff] clickable transition-colors">
+                                    <button onclick="togglePause('${id}')" class="w-6 h-6 flex items-center justify-center flex-shrink-0 bg-zinc-900 border border-zinc-700 text-[10px] font-bold hover:bg-zinc-800 hover:text-[#a1a1aa] clickable transition-colors">
                                         ${isPaused ? '▶' : '⏸'}
                                     </button>
                                 </div>
-                                <p id="death_timer_${id}" class="text-[9px] pixel-font mt-1 font-bold text-slate-400">CALCULATING...</p>
+                                <p id="death_timer_${id}" class="text-[9px] pixel-font mt-1 font-bold text-zinc-500">CALCULATING...</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-2">
-                            <button onclick="toggleExpand('${id}')" class="p-1 text-xs text-slate-400 font-bold pixel-font clickable hover:text-white transition-colors">${isExpanded ? '▲' : '▼'}</button>
-                            <button onclick="deleteChar('${id}')" class="text-slate-600 hover:text-red-500 text-xs font-bold px-1 transition-colors">X</button>
+                            <button onclick="toggleExpand('${id}')" class="p-1 text-xs text-zinc-500 font-bold pixel-font clickable hover:text-white transition-colors">${isExpanded ? '▲' : '▼'}</button>
+                            <button onclick="deleteChar('${id}')" class="text-zinc-600 hover:text-red-500 text-xs font-bold px-1 transition-colors">X</button>
                         </div>
                     </div>
 
                     <div class="expand-content">
                         <div class="grid grid-cols-1 gap-3 mb-4">
-                            <div class="p-2 border border-slate-900 bg-black/40 hover:border-red-500/40 transition-colors clickable" onclick="quickResetFood('${id}')">
+                            <div class="p-2 border border-zinc-900 bg-black/40 hover:border-red-500/40 transition-colors clickable" onclick="quickResetFood('${id}')">
                                 <div class="flex justify-between text-[9px] pixel-font text-red-400 mb-1">
                                     <span>HP:ENERGY</span> <span id="tf_${id}">0.0%</span>
                                 </div>
                                 <div class="rpg-bar-container"><div id="bf_${id}" class="h-full bar-energy transition-all duration-500"></div></div>
                             </div>
-                            <div class="p-2 border border-slate-900 bg-black/40 hover:border-sky-500/40 transition-colors clickable" onclick="quickResetBrain('${id}')">
-                                <div class="flex justify-between text-[9px] pixel-font text-sky-400 mb-1">
+                            <div class="p-2 border border-zinc-900 bg-black/40 hover:border-zinc-500/40 transition-colors clickable" onclick="quickResetBrain('${id}')">
+                                <div class="flex justify-between text-[9px] pixel-font text-zinc-400 mb-1">
                                     <span>MP:BRAIN</span> <span id="tb_${id}">0.0%</span>
                                 </div>
                                 <div class="rpg-bar-container"><div id="bb_${id}" class="h-full bar-brain transition-all duration-500"></div></div>
                             </div>
                         </div>
                         
-                        <div class="border-t border-dashed border-slate-800 pt-3">
+                        <div class="border-t border-dashed border-zinc-800 pt-3">
                             <div class="flex justify-between items-center mb-2">
-                                <span class="text-[9px] pixel-font text-slate-500">MISSIONS LIST</span>
-                                <button onclick="openAFKModal('${id}')" class="bg-slate-900 text-slate-300 text-[9px] border border-slate-700 px-2 py-0.5 hover:text-white hover:border-[#7cd6ff] clickable transition-all">+ ADD</button>
+                                <span class="text-[9px] pixel-font text-zinc-600">MISSIONS LIST</span>
+                                <button onclick="openAFKModal('${id}')" class="bg-zinc-900 text-zinc-400 text-[9px] border border-zinc-700 px-2 py-0.5 hover:text-white hover:border-[#a1a1aa] clickable transition-all">+ ADD</button>
                             </div>
                             <div id="timers_${id}" class="space-y-2"></div>
                         </div>
@@ -579,7 +576,7 @@
                 if (elDeath) {
                     if (char.is_paused) {
                         elDeath.innerText = "⏸ PAUSED";
-                        elDeath.className = "text-[9px] pixel-font mt-1 text-slate-500";
+                        elDeath.className = "text-[9px] pixel-font mt-1 text-zinc-600";
                     } else if (f <= 0) {
                         elDeath.innerText = "💀 DIED (0%)";
                         elDeath.className = "text-[9px] pixel-font mt-1 text-red-500 animate-pulse";
@@ -593,7 +590,7 @@
                         if (remSec < 900) {
                             elDeath.className = "text-[9px] pixel-font mt-1 text-red-400 font-bold animate-bounce";
                         } else {
-                            elDeath.className = "text-[9px] pixel-font mt-1 text-[#7cd6ff]";
+                            elDeath.className = "text-[9px] pixel-font mt-1 text-zinc-400";
                         }
                     }
                 }
@@ -629,20 +626,20 @@
                                         newlyCompletedFound = true; 
                                     }
                                 } else {
-                                    remStr = formatTimeWithSeconds(left); // เปลี่ยนมาใช้ฟังก์ชันแบบมีวินาทีที่นี่
+                                    remStr = formatTimeWithSeconds(left);
                                 }
                             }
                             
                             return `
-                            <div class="p-2 bg-black/60 border ${isDone ? 'border-red-500 bg-red-950/20' : 'border-slate-900'} flex justify-between items-center transition-all duration-300">
-                                <span class="text-xs font-bold ${isDone ? 'text-red-400 animate-pulse' : 'text-slate-400'} truncate pr-2">▪ ${t.item_name}</span>
+                            <div class="p-2 bg-black/60 border ${isDone ? 'border-zinc-500 bg-zinc-900/20' : 'border-zinc-900'} flex justify-between items-center transition-all duration-300">
+                                <span class="text-xs font-bold ${isDone ? 'text-zinc-400 animate-pulse' : 'text-zinc-400'} truncate pr-2">▪ ${t.item_name}</span>
                                 <div class="flex items-center gap-2">
-                                    <span class="text-[9px] ${isDone ? 'bg-red-600 text-white animate-pulse' : 'bg-slate-800 text-white'} px-1.5 py-0.5 border border-slate-700 font-mono">${remStr}</span>
-                                    <button onclick="deleteActivity('${id}', '${t.id}')" class="text-slate-600 hover:text-white font-bold px-1 text-xs transition-colors">✕</button>
+                                    <span class="text-[9px] ${isDone ? 'bg-zinc-700 text-white animate-pulse' : 'bg-zinc-800 text-zinc-300'} px-1.5 py-0.5 border border-zinc-700 font-mono">${remStr}</span>
+                                    <button onclick="deleteActivity('${id}', '${t.id}')" class="text-zinc-600 hover:text-white font-bold px-1 text-xs transition-colors">✕</button>
                                 </div>
                             </div>`;
                         }).join('');
-                    } else { tContainer.innerHTML = '<p class="text-[9px] text-slate-700 italic">No live mission...</p>'; }
+                    } else { tContainer.innerHTML = '<p class="text-[9px] text-zinc-700 italic">No live mission...</p>'; }
                 }
             }
 
@@ -670,9 +667,9 @@
             let listHTML = "";
             for (let key in completedMissionsTracker) {
                 const data = completedMissionsTracker[key];
-                listHTML += `<div class="truncate font-semibold text-slate-300 py-0.5 border-b border-slate-900/30">
+                listHTML += `<div class="truncate font-semibold text-zinc-300 py-0.5 border-b border-zinc-900/30">
                     ${data.charEmoji} <span class="text-white">${data.itemName}</span> 
-                    <span class="text-[9px] text-slate-500 pixel-font">(${data.charName})</span>
+                    <span class="text-[9px] text-zinc-500 pixel-font">(${data.charName})</span>
                 </div>`;
             }
             listEl.innerHTML = listHTML;
@@ -727,7 +724,7 @@
             });
 
             if (allMissions.length === 0) {
-                overviewContainer.innerHTML = '<p class="text-xs text-slate-600 text-center py-4 pixel-font">NO ACTIVE MISSIONS AT ALL</p>';
+                overviewContainer.innerHTML = '<p class="text-xs text-zinc-600 text-center py-4 pixel-font">NO ACTIVE MISSIONS AT ALL</p>';
                 return;
             }
 
@@ -735,20 +732,20 @@
                 let displayTime = "";
                 if (m.isPaused) displayTime = 'PAUSED';
                 else if (m.isDone) displayTime = '[ SUCCESS ]';
-                else displayTime = formatTimeWithSeconds(m.remSec); // เปลี่ยนมาใช้ฟังก์ชันแบบมีวินาทีที่นี่เช่นกัน
+                else displayTime = formatTimeWithSeconds(m.remSec);
                 
                 return `
-                <div class="p-2 border flex justify-between items-center gap-2 ${m.isDone ? 'bg-red-950/40 border-red-500' : 'bg-slate-900/80 border-slate-800'} transition-all">
+                <div class="p-2 border flex justify-between items-center gap-2 ${m.isDone ? 'bg-zinc-900/40 border-zinc-500' : 'bg-zinc-900/80 border-zinc-800'} transition-all">
                     <div class="flex items-center gap-2 truncate">
                         <span class="text-lg">${m.charEmoji}</span>
                         <div class="truncate">
-                            <p class="text-[10px] font-bold text-white truncate ${m.isDone ? 'text-red-400 animate-pulse' : ''}">${m.itemName}</p>
-                            <p class="text-[8px] text-slate-500 uppercase pixel-font tracking-tighter">Owner: ${m.charName}</p>
+                            <p class="text-[10px] font-bold text-white truncate ${m.isDone ? 'text-zinc-400 animate-pulse' : ''}">${m.itemName}</p>
+                            <p class="text-[8px] text-zinc-500 uppercase pixel-font tracking-tighter">Owner: ${m.charName}</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-2 flex-shrink-0">
-                        <span class="text-[9px] pixel-font font-mono ${m.isDone ? 'text-red-400 font-bold bg-red-900 border-red-500 animate-pulse' : (m.remSec <= 60 && !m.isPaused ? 'text-yellow-400 animate-pulse bg-black border-slate-800' : 'text-slate-300 bg-black border-slate-800')} px-1.5 py-0.5 border">${displayTime}</span>
-                        <button onclick="deleteActivity('${m.charId}', '${m.missionId}')" class="text-rose-500 font-bold text-xs px-1 hover:text-white transition-colors">✕</button>
+                        <span class="text-[9px] pixel-font font-mono ${m.isDone ? 'text-zinc-400 font-bold bg-zinc-800 border-zinc-600 animate-pulse' : (m.remSec <= 60 && !m.isPaused ? 'text-yellow-500 animate-pulse bg-black border-zinc-800' : 'text-zinc-300 bg-black border-zinc-800')} px-1.5 py-0.5 border">${displayTime}</span>
+                        <button onclick="deleteActivity('${m.charId}', '${m.missionId}')" class="text-zinc-500 font-bold text-xs px-1 hover:text-white transition-colors">✕</button>
                     </div>
                 </div>`;
             }).join('');

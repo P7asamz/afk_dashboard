@@ -10,15 +10,13 @@
     
     <style>
         :root { 
-            --bg-main: #09090b; /* เทาเข้มเกือบดำ */
-            --border-main: #a1a1aa; /* สีเทาอ่อนถนอมสายตา */
-            --card-bg: #121214; /* สีพื้นหลังการ์ดเทาเข้ม */
+            --bg-main: #09090b; 
+            --border-main: #a1a1aa; 
+            --card-bg: #121214; 
             --text-muted: #71717a;
         }
         
-        html {
-            scroll-behavior: smooth;
-        }
+        html { scroll-behavior: smooth; }
 
         body { 
             background-color: var(--bg-main); 
@@ -29,11 +27,8 @@
             background-size: 20px 20px;
         }
 
-        .pixel-font {
-            font-family: 'Press Start 2P', cursive;
-        }
+        .pixel-font { font-family: 'Press Start 2P', cursive; }
         
-        /* สไตล์ Header ธีมเทาเข้ม สบายตาตอนกลางคืน */
         .cyber-header {
             background: linear-gradient(135deg, #121214 0%, #18181b 100%);
             border: 3px solid var(--border-main);
@@ -45,7 +40,7 @@
             position: absolute;
             top: 0; left: 0; right: 0; height: 2px;
             background: linear-gradient(90deg, transparent, var(--border-main), transparent);
-            animation: scanline 7s linear infinite; /* วิ่งช้าเนิบๆ ไม่กวนสายตา */
+            animation: scanline 7s linear infinite;
         }
 
         @keyframes scanline {
@@ -58,7 +53,7 @@
             border: 3px solid #27272a;
         }
 
-        /* ปรับปรุงการ์ดให้เป็นโทนคลาสสิกมืด */
+        /* การ์ดปกติโทนสีเข้ม */
         .pixel-card {
             background: #121214;
             border: 3px solid #202024;
@@ -69,8 +64,16 @@
             border-color: var(--border-main);
             transform: translateY(-2px);
         }
+
+        /* 🖤 แก้ไขใหม่: สไตล์สำหรับตัวที่ตายแล้ว (เปลี่ยนเป็นสีดำสนิท ไม่ซ้ำกับตัวเตือนใกล้ตาย) */
+        .dead-card {
+            background: #000000 !important;
+            border: 3px solid #27272a !important;
+            box-shadow: 2px 2px 0px #18181b !important;
+            filter: grayscale(0.8);
+            opacity: 0.65;
+        }
         
-        /* ปุ่มกดดีไซน์โมโนโครม */
         .pixel-btn {
             background: #e4e4e7;
             color: #09090b;
@@ -100,20 +103,16 @@
             background: #a1a1aa;
             color: #09090b;
         }
-        .pixel-btn-neon:active {
-            transform: translateY(4px);
-            box-shadow: 0px 0px 0px #000000;
-        }
         
-        /* RPG Bars */
         .rpg-bar-container { 
             background: #000000; 
             height: 16px; 
             border: 2px solid #27272a;
             padding: 1px;
         }
-        .bar-energy { background: #b91c1c; } /* แดงเข้มหม่นลงไม่แสบตา */
-        .bar-brain { background: #52525b; } /* สมองเปลี่ยนเป็นสีเทาเข้มคูลๆ */
+        .bar-energy { background: #b91c1c; }
+        .bar-brain { background: #52525b; }
+        .bar-dead { background: #18181b !important; } /* แถบพลังงานตัวที่ตาย */
 
         .clickable { cursor: pointer; }
 
@@ -159,10 +158,6 @@
             background: #a1a1aa;
             border: 2px solid #000;
             cursor: pointer;
-            transition: transform 0.1s ease;
-        }
-        .cyber-slider::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
         }
 
         #bottomMasterAlert {
@@ -178,9 +173,62 @@
             animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
+        /* Container ปรับความกว้างเพิ่มขึ้นรองรับกล่องแจ้งเตือนขนาดใหญ่ */
+        #deathWarningStack {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 10000;
+            width: calc(100% - 48px);
+            max-width: 440px; /* ขยายความกว้างสูงสุดของพื้นที่แจ้งเตือน */
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            pointer-events: none;
+        }
+        @media (max-width: 640px) {
+            #deathWarningStack {
+                left: 50%;
+                right: auto;
+                transform: translateX(-50%);
+            }
+        }
+
+        /* ⚠️ แก้ไขใหม่: ป๊อปอัปแจ้งเตือนตายตัวใหญ่กว่าเดิมเด่นชัดขึ้นมาก (Large Toast) */
+        .toast-warn-card {
+            pointer-events: auto;
+            background: #09090b;
+            border: 4px solid #dc2626; /* ขอบหนาขึ้น */
+            box-shadow: 6px 6px 0px #450a0a;
+            padding: 14px; /* เพิ่มพื้นที่ด้านในกล่อง */
+            overflow: hidden;
+            max-height: 54px; /* ขยายขนาดเริ่มต้นตอนยุบข้อความให้สูงขึ้น */
+            transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease;
+            animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        /* เมื่อเมาส์ชี้ไปโดน จะขยายกางลงมาแสดงรายละเอียดบอท */
+        .toast-warn-card:hover {
+            max-height: 150px; /* เพิ่มพื้นที่ตอนขยายออก */
+            box-shadow: 6px 6px 16px rgba(220, 38, 38, 0.5);
+        }
+
+        .toast-detail-zone {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 2px dashed #450a0a;
+        }
+        .toast-warn-card:hover .toast-detail-zone {
+            opacity: 1;
+            visibility: visible;
+        }
+
         @keyframes slideUp {
-            from { transform: translate(-50%, 50px); opacity: 0; }
-            to { transform: translate(-50%, 0); opacity: 1; }
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
         .modal-bg {
@@ -188,13 +236,22 @@
             transition: all 0.3s ease;
         }
 
-        .live-pulse {
-            animation: pulse-gray 2.5s infinite;
-        }
+        .live-pulse { animation: pulse-gray 2.5s infinite; }
         @keyframes pulse-gray {
             0% { transform: scale(0.95); opacity: 0.4; }
             70% { transform: scale(1); opacity: 0.9; }
             100% { transform: scale(0.95); opacity: 0.4; }
+        }
+
+        @keyframes pulse-red-border {
+            0% { border-color: #b91c1c; box-shadow: 6px 6px 0px #450a0a; }
+            50% { border-color: #f87171; box-shadow: 6px 6px 8px rgba(185, 28, 28, 0.5); }
+            100% { border-color: #b91c1c; box-shadow: 6px 6px 0px #450a0a; }
+        }
+        /* ตัวเตือนใกล้ตายสีแดงกะพริบเด่นชัดแยกจากตัวที่ตายแล้วชัดเจน */
+        .near-death-card {
+            background: #1a1010 !important;
+            animation: pulse-red-border 1.5s infinite !important;
         }
     </style>
 </head>
@@ -205,9 +262,7 @@
         <!-- HEADER ZONE -->
         <div class="cyber-header p-5 md:p-6 flex flex-col lg:flex-row justify-between items-center gap-6 rounded-none">
             <div class="flex items-center gap-4 w-full lg:w-auto">
-                <div class="w-12 h-12 bg-[#a1a1aa] text-black flex items-center justify-center text-2xl font-bold">
-                    🤖
-                </div>
+                <div class="w-12 h-12 bg-[#a1a1aa] text-black flex items-center justify-center text-2xl font-bold">🤖</div>
                 <div>
                     <div class="flex items-center gap-3">
                         <h1 class="text-lg md:text-xl font-bold text-white pixel-font tracking-wider">AFK DASHBOARD</h1>
@@ -227,16 +282,15 @@
                 </div>
 
                 <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
-                    <button onclick="toggleMute()" id="muteBtn" class="bg-zinc-900/90 border border-zinc-700 text-base p-2 w-10 h-10 flex items-center justify-center hover:border-[#a1a1aa] hover:text-[#a1a1aa] transition-colors duration-200 clickable" title="Toggle Sound">
-                        🔊
-                    </button>
+                    <button onclick="toggleMute()" id="muteBtn" class="bg-zinc-900/90 border border-zinc-700 text-base p-2 w-10 h-10 flex items-center justify-center hover:border-[#a1a1aa] hover:text-[#a1a1aa] transition-colors duration-200 clickable" title="Toggle Sound">🔊</button>
                     <button onclick="openMissionsOverview()" class="pixel-btn-neon text-[9px] h-10 px-4">📋 MISSIONS</button>
                     <button onclick="openModal('addCharModal')" class="pixel-btn text-[9px] h-10 px-4">REGISTER</button>
                 </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 gap-4 transition-all duration-300" id="charactersContainer"></div>
+        <!-- MAIN CONTAINER FOR CHARACTERS -->
+        <div class="grid gap-4 transition-all duration-300" id="charactersContainer"></div>
     </div>
 
     <!-- MASTER POPUP CONTAINER -->
@@ -249,6 +303,9 @@
             <div id="masterAlertList" class="max-h-24 overflow-y-auto space-y-1 text-xs text-zinc-300 pl-6 border-t border-zinc-800/60 pt-1.5"></div>
         </div>
     </div>
+
+    <!-- STACK CONTAINER FOR HOVER TOAST WARNINGS -->
+    <div id="deathWarningStack"></div>
 
     <!-- MODAL: ALL MISSIONS OVERVIEW -->
     <div id="overviewModal" class="hidden modal-bg fixed inset-0 bg-black/80 flex justify-center items-center p-4 z-50">
@@ -268,10 +325,8 @@
             <div class="space-y-4">
                 <label class="block text-[10px] text-zinc-400 pixel-font">AVATAR SELECTION</label>
                 <div class="grid grid-cols-5 gap-2 p-2 bg-black/40 border-2 border-zinc-800" id="add_emoji_pool"></div>
-                
                 <input type="hidden" id="add_char_emoji" value="🐬">
                 <input type="text" id="add_char_name" class="w-full bg-black text-white border-2 border-zinc-800 p-3 text-sm font-bold outline-none focus:border-[#a1a1aa] transition-colors" placeholder="UNIT NAME...">
-                
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-[9px] text-zinc-500 pixel-font mb-1">START ENERGY</label>
@@ -299,7 +354,6 @@
                 <div class="grid grid-cols-5 gap-2 p-2 bg-black/40 border-2 border-zinc-800" id="edit_emoji_pool"></div>
                 <input type="hidden" id="edit_char_emoji">
                 <input type="text" id="edit_char_name" class="w-full bg-black text-white border-2 border-zinc-800 p-3 text-sm font-bold outline-none focus:border-[#a1a1aa] transition-colors">
-                
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-[9px] text-zinc-500 pixel-font mb-1">ENERGY</label>
@@ -345,20 +399,24 @@
         let cachedCharacters = {};
         let expandedStates = {};
         let currentCols = 1; 
-        
         let isMuted = false; 
         let completedMissionsTracker = {}; 
+        let deathWarnedUnits = {}; 
 
         function formatTimeWithSeconds(totalSeconds) {
             if (totalSeconds <= 0) return 'SUCCESS';
             const hrs = Math.floor(totalSeconds / 3600);
             const mins = Math.floor((totalSeconds % 3600) / 60);
             const secs = Math.floor(totalSeconds % 60);
-            
-            if (hrs > 0) {
-                return `${hrs}H ${mins}M ${secs}S`;
-            }
+            if (hrs > 0) return `${hrs}H ${mins}M ${secs}S`;
             return `${mins}M ${secs}S`;
+        }
+
+        function formatDigitalTime(totalSeconds) {
+            const hrs = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+            const mins = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+            const secs = String(Math.floor(totalSeconds % 60)).padStart(2, '0');
+            return `${hrs}:${mins}:${secs}`;
         }
 
         function playBeepSound() {
@@ -377,9 +435,40 @@
             } catch(e) {}
         }
 
+        // ปรับปรุงใหม่: ขยายขนาดข้อความแจ้งเตือนและหัวข้อระบบให้น่ามอง-ชัดเจนขึ้น (Large Toast Box)
+        function showBottomWarning(charId, charName, emoji, initialSec) {
+            const stack = document.getElementById('deathWarningStack');
+            if (!stack) return;
+            if (document.getElementById(`toast_warn_${charId}`)) return;
+
+            const toastHTML = `
+                <div id="toast_warn_${charId}" class="toast-warn-card flex flex-col justify-start">
+                    <div class="flex justify-between items-center w-full">
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm text-red-500 font-bold pixel-font tracking-wide animate-pulse">🚨 CRITICAL WARNING</span>
+                        </div>
+                        <button onclick="this.parentElement.parentElement.remove()" class="text-zinc-500 hover:text-white font-bold text-xs px-1 cursor-pointer transition-colors">✕</button>
+                    </div>
+                    
+                    <div class="toast-detail-zone flex items-center gap-4">
+                        <span class="text-3xl animate-bounce flex-shrink-0">${emoji}</span>
+                        <div>
+                            <p class="text-sm text-zinc-100 font-bold">[ ${charName} ] พลังงานใกล้หมดแล้ว!</p>
+                            <p id="toast_clock_${charId}" class="text-xs text-red-400 font-mono font-bold mt-1">เวลาที่เหลือ: ${formatDigitalTime(initialSec)}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            stack.insertAdjacentHTML('beforeend', toastHTML);
+        }
+
+        function removeBottomWarning(charId) {
+            const el = document.getElementById(`toast_warn_${charId}`);
+            if (el) el.remove();
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
             supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            
             const savedCols = localStorage.getItem('afk_display_cols');
             if(savedCols) {
                 currentCols = parseInt(savedCols);
@@ -408,15 +497,10 @@
             currentCols = parseInt(val);
             document.getElementById('colValue').innerText = currentCols;
             localStorage.setItem('afk_display_cols', currentCols);
-
             const container = document.getElementById('charactersContainer');
             if(container) {
-                container.classList.remove('grid-cols-1', 'sm:grid-cols-2', 'md:grid-cols-3', 'lg:grid-cols-4', 'xl:grid-cols-5');
-                if(currentCols === 1) container.classList.add('grid-cols-1');
-                else if(currentCols === 2) container.classList.add('grid-cols-1', 'sm:grid-cols-2');
-                else if(currentCols === 3) container.classList.add('grid-cols-1', 'sm:grid-cols-2', 'md:grid-cols-3');
-                else if(currentCols === 4) container.classList.add('grid-cols-1', 'sm:grid-cols-2', 'md:grid-cols-3', 'lg:grid-cols-4');
-                else if(currentCols === 5) container.classList.add('grid-cols-1', 'sm:grid-cols-2', 'md:grid-cols-3', 'lg:grid-cols-4', 'xl:grid-cols-5');
+                container.style.display = 'grid';
+                container.style.gridTemplateColumns = `repeat(${currentCols}, minmax(0, 1fr))`;
             }
         }
 
@@ -451,6 +535,8 @@
                         if (key.startsWith(payload.old.id + "_")) delete completedMissionsTracker[key];
                     }
                     delete cachedCharacters[payload.old.id];
+                    delete deathWarnedUnits[payload.old.id];
+                    removeBottomWarning(payload.old.id);
                 } else {
                     const localStars = getLocalStars();
                     const nextTimerIds = (payload.new.timers || []).map(t => t.id);
@@ -460,7 +546,10 @@
                             if (!nextTimerIds.includes(tId)) delete completedMissionsTracker[key];
                         }
                     }
-
+                    if (cachedCharacters[payload.new.id] && payload.new.food_base > cachedCharacters[payload.new.id].food_base) {
+                        delete deathWarnedUnits[payload.new.id];
+                        removeBottomWarning(payload.new.id);
+                    }
                     cachedCharacters[payload.new.id] = {
                         ...payload.new, 
                         timers: payload.new.timers || [],
@@ -473,7 +562,6 @@
         }
 
         function toggleExpand(id) { expandedStates[id] = !expandedStates[id]; renderStructure(); }
-
         function toggleStar(id) {
             const newState = !cachedCharacters[id].is_starred;
             cachedCharacters[id].is_starred = newState;
@@ -494,6 +582,9 @@
             const container = document.getElementById('charactersContainer');
             
             const sortedList = Object.values(cachedCharacters).sort((a, b) => {
+                const aDead = getSecondsUntilDeath(a) === 0;
+                const bDead = getSecondsUntilDeath(b) === 0;
+                if (aDead !== bDead) return aDead ? 1 : -1;
                 if (a.is_starred !== b.is_starred) return a.is_starred ? -1 : 1;
                 if (a.is_paused !== b.is_paused) return a.is_paused ? 1 : -1;
                 return getSecondsUntilDeath(a) - getSecondsUntilDeath(b);
@@ -505,8 +596,13 @@
                 const isExpanded = expandedStates[id];
                 const isStarred = char.is_starred;
                 
+                const now = Date.now() / 1000;
+                const elapsed = isPaused ? 0 : (now - char.status_updated_at);
+                const currentFoodCalculated = Math.max(0, char.food_base - (elapsed * FOOD_DECAY));
+                const isDead = !isPaused && currentFoodCalculated <= 0;
+
                 return `
-                <div id="card_${id}" class="pixel-card p-4 rounded-none ${isPaused ? 'opacity-40 bg-zinc-900/40' : 'bg-[#121214]'} ${isExpanded ? 'expanded' : 'collapsed'}">
+                <div id="card_${id}" class="pixel-card p-4 rounded-none ${isDead ? 'dead-card' : ''} ${isPaused ? 'opacity-40 bg-zinc-900/40' : ''} ${isExpanded ? 'expanded' : 'collapsed'}">
                     <div class="flex items-center justify-between flex-wrap gap-2">
                         <div class="flex items-center gap-3 truncate max-w-[85%]">
                             <div onclick="openEditModal('${id}')" class="w-11 h-11 bg-zinc-950 border-2 border-zinc-800 flex items-center justify-center text-2xl flex-shrink-0 clickable hover:border-[#a1a1aa] transition-all">
@@ -515,12 +611,12 @@
                             <div class="truncate">
                                 <div class="flex items-center gap-2">
                                     <button onclick="toggleStar('${id}')" class="text-xl leading-none clickable ${isStarred ? 'star-active' : 'text-zinc-700'} transition-transform hover:scale-110">★</button>
-                                    <h2 class="text-sm font-bold text-white tracking-wide truncate">${char.char_display_name}</h2>
+                                    <h2 class="text-sm font-bold ${isDead ? 'text-zinc-600 line-through' : 'text-white'} tracking-wide truncate">${char.char_display_name}</h2>
                                     <button onclick="togglePause('${id}')" class="w-6 h-6 flex items-center justify-center flex-shrink-0 bg-zinc-900 border border-zinc-700 text-[10px] font-bold hover:bg-zinc-800 hover:text-[#a1a1aa] clickable transition-colors">
                                         ${isPaused ? '▶' : '⏸'}
                                     </button>
                                 </div>
-                                <p id="death_timer_${id}" class="text-[9px] pixel-font mt-1 font-bold text-zinc-500">CALCULATING...</p>
+                                <p id="death_timer_${id}" class="text-[9px] pixel-font mt-1 font-bold text-zinc-500 whitespace-nowrap overflow-hidden">CALCULATING...</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-2">
@@ -532,10 +628,10 @@
                     <div class="expand-content">
                         <div class="grid grid-cols-1 gap-3 mb-4">
                             <div class="p-2 border border-zinc-900 bg-black/40 hover:border-red-500/40 transition-colors clickable" onclick="quickResetFood('${id}')">
-                                <div class="flex justify-between text-[9px] pixel-font text-red-400 mb-1">
+                                <div class="flex justify-between text-[9px] pixel-font ${isDead ? 'text-zinc-700' : 'text-red-400'} mb-1">
                                     <span>HP:ENERGY</span> <span id="tf_${id}">0.0%</span>
                                 </div>
-                                <div class="rpg-bar-container"><div id="bf_${id}" class="h-full bar-energy transition-all duration-500"></div></div>
+                                <div class="rpg-bar-container"><div id="bf_${id}" class="h-full ${isDead ? 'bar-dead' : 'bar-energy'} transition-all duration-500"></div></div>
                             </div>
                             <div class="p-2 border border-zinc-900 bg-black/40 hover:border-zinc-500/40 transition-colors clickable" onclick="quickResetBrain('${id}')">
                                 <div class="flex justify-between text-[9px] pixel-font text-zinc-400 mb-1">
@@ -572,20 +668,46 @@
                     b = Math.min(100, b + (elapsed * BRAIN_GROW));
                 }
                 
+                const elCard = document.getElementById(`card_${id}`);
                 const elDeath = document.getElementById(`death_timer_${id}`);
+                const elToastClock = document.getElementById(`toast_clock_${id}`);
+                
                 if (elDeath) {
                     if (char.is_paused) {
                         elDeath.innerText = "⏸ PAUSED";
                         elDeath.className = "text-[9px] pixel-font mt-1 text-zinc-600";
+                        if (elCard) elCard.classList.remove('near-death-card');
                     } else if (f <= 0) {
                         elDeath.innerText = "💀 DIED (0%)";
-                        elDeath.className = "text-[9px] pixel-font mt-1 text-red-500 animate-pulse";
+                        elDeath.className = "text-[9px] pixel-font mt-1 text-zinc-600 font-bold";
+                        if (elCard) {
+                            elCard.classList.remove('near-death-card');
+                            if (!elCard.classList.contains('dead-card')) elCard.classList.add('dead-card');
+                        }
+                        removeBottomWarning(id); 
                     } else {
                         const remSec = f / FOOD_DECAY;
-                        const hrs = Math.floor(remSec / 3600);
-                        const mins = Math.floor((remSec % 3600) / 60);
-                        const secs = Math.floor(remSec % 60);
-                        elDeath.innerText = `💀 DIE IN ${hrs}h ${mins}m ${secs}s`;
+                        elDeath.innerText = `💀 DIE: ${formatDigitalTime(remSec)}`;
+                        
+                        if (elToastClock) {
+                            elToastClock.innerText = `เวลาที่เหลือ: ${formatDigitalTime(remSec)}`;
+                        }
+
+                        if (remSec <= 300 && !deathWarnedUnits[id]) {
+                            deathWarnedUnits[id] = true; 
+                            playBeepSound(); 
+                            showBottomWarning(id, char.char_display_name, char.emoji, remSec);
+                        }
+                        
+                        if (elCard) {
+                            if (remSec <= 300) {
+                                elCard.classList.add('near-death-card');
+                                elCard.classList.remove('dead-card');
+                            } else {
+                                elCard.classList.remove('near-death-card');
+                                elCard.classList.remove('dead-card');
+                            }
+                        }
                         
                         if (remSec < 900) {
                             elDeath.className = "text-[9px] pixel-font mt-1 text-red-400 font-bold animate-bounce";
@@ -615,7 +737,6 @@
                                 if (left <= 0) {
                                     remStr = 'SUCCESS';
                                     isDone = true;
-                                    
                                     const trackerKey = `${char.id}_${t.id}`;
                                     if (!completedMissionsTracker[trackerKey]) {
                                         completedMissionsTracker[trackerKey] = {
@@ -632,7 +753,7 @@
                             
                             return `
                             <div class="p-2 bg-black/60 border ${isDone ? 'border-zinc-500 bg-zinc-900/20' : 'border-zinc-900'} flex justify-between items-center transition-all duration-300">
-                                <span class="text-xs font-bold ${isDone ? 'text-zinc-400 animate-pulse' : 'text-zinc-400'} truncate pr-2">▪ ${t.item_name}</span>
+                                <span class="text-xs font-bold text-zinc-400 truncate pr-2">▪ ${t.item_name}</span>
                                 <div class="flex items-center gap-2">
                                     <span class="text-[9px] ${isDone ? 'bg-zinc-700 text-white animate-pulse' : 'bg-zinc-800 text-zinc-300'} px-1.5 py-0.5 border border-zinc-700 font-mono">${remStr}</span>
                                     <button onclick="deleteActivity('${id}', '${t.id}')" class="text-zinc-600 hover:text-white font-bold px-1 text-xs transition-colors">✕</button>
@@ -643,9 +764,7 @@
                 }
             }
 
-            if (newlyCompletedFound) {
-                playBeepSound();
-            }
+            if (newlyCompletedFound) playBeepSound();
             updateMasterPopupDOM();
             updateMissionsOverviewLive();
         }
@@ -654,7 +773,6 @@
             const popupEl = document.getElementById('bottomMasterAlert');
             const titleEl = document.getElementById('masterAlertTitle');
             const listEl = document.getElementById('masterAlertList');
-            
             const totalDone = Object.keys(completedMissionsTracker).length;
             
             if (totalDone === 0) {
@@ -663,7 +781,6 @@
             }
             
             titleEl.innerText = `${totalDone} MISSION${totalDone > 1 ? 'S' : ''} COMPLETED!`;
-            
             let listHTML = "";
             for (let key in completedMissionsTracker) {
                 const data = completedMissionsTracker[key];
@@ -693,17 +810,12 @@
                 char.timers.forEach(t => {
                     let remSec = 0;
                     let isDone = false;
-                    
                     if (char.is_paused) {
                         remSec = t.saved_remaining_sec || 0;
                     } else {
                         remSec = t.target_time - now;
-                        if (remSec <= 0) {
-                            remSec = 0; 
-                            isDone = true;
-                        }
+                        if (remSec <= 0) { remSec = 0; isDone = true; }
                     }
-                    
                     allMissions.push({
                         charName: char.char_display_name,
                         charEmoji: char.emoji,
@@ -759,6 +871,9 @@
                 const elapsed = now - char.status_updated_at;
                 currentBrain = Math.min(100, currentBrain + (elapsed * BRAIN_GROW));
             }
+            delete deathWarnedUnits[id];
+            removeBottomWarning(id); 
+            
             await supabaseClient.from('afk_characters').update({
                 food_base: 100, 
                 brain_base: currentBrain,
@@ -786,10 +901,8 @@
             const char = cachedCharacters[charId];
             if (!char) return;
             const updatedTimers = char.timers.filter(t => t.id !== timerId);
-            
             const trackerKey = `${charId}_${timerId}`;
             delete completedMissionsTracker[trackerKey];
-
             await supabaseClient.from('afk_characters').update({ timers: updatedTimers }).eq('id', charId);
         }
 
@@ -821,13 +934,19 @@
                 char.timers.forEach(t => t.saved_remaining_sec = Math.max(0, t.target_time - now));
             } else {
                 char.timers.forEach(t => t.target_time = now + (t.saved_remaining_sec || 0));
+                delete deathWarnedUnits[id];
+                removeBottomWarning(id);
             }
             updates.timers = char.timers;
             await supabaseClient.from('afk_characters').update(updates).eq('id', id);
             setTimeout(renderStructure, 100);
         }
 
-        async function deleteChar(id) { if(confirm("DELETE UNIT?")) await supabaseClient.from('afk_characters').delete().eq('id', id); }
+        async function deleteChar(id) { 
+            if(confirm("DELETE UNIT?")) {
+                await supabaseClient.from('afk_characters').delete().eq('id', id);
+            }
+        }
 
         function openModal(m) { 
             const modal = document.getElementById(m);
@@ -852,6 +971,8 @@
 
         async function submitEditStatus() {
             const id = document.getElementById('edit_old_id').value;
+            delete deathWarnedUnits[id];
+            removeBottomWarning(id);
             await supabaseClient.from('afk_characters').update({
                 char_display_name: document.getElementById('edit_char_name').value,
                 food_base: parseFloat(document.getElementById('edit_food').value),

@@ -443,14 +443,20 @@
         }
 
         // 🎹 ฟังก์ชันกำเนิดคลื่นเสียงสังเคราะห์ (Web Audio API Synthesizer) มีให้เลือก 10 แบบไม่ซ้ำกัน
-        function playBeepSound() {
+        // ปรับปรุง: รองรับการเช็ก Mute แยกรายตัวบอทได้
+        function playBeepSound(specificCharId = null) {
             if (isMuted) return; 
+            
+            // เช็กระบบ Mute แยกรายตัว ถ้าส่ง ID บอทมาและบอทตัวนั้นโดน Mute อยู่ จะไม่ส่งเสียง
+            if (specificCharId && localStorage.getItem(`afk_mute_${specificCharId}`) === 'true') {
+                return;
+            }
+
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 
                 switch(selectedSound) {
                     case "retro-beep": {
-                        // 1. Retro Square: เสียงปิ๊ปสั้นสไตล์คลาสสิกเกมตู้คอมพิวเตอร์
                         const osc = audioCtx.createOscillator();
                         const gain = audioCtx.createGain();
                         osc.type = 'square';
@@ -461,7 +467,6 @@
                         break;
                     }
                     case "cyber-ping": {
-                        // 2. Cyber Ping: เสียงสะท้อนความถี่สูงแหลมสไตล์ Sci-fi
                         const osc = audioCtx.createOscillator();
                         const gain = audioCtx.createGain();
                         osc.type = 'sine';
@@ -474,7 +479,6 @@
                         break;
                     }
                     case "alarm-siren": {
-                        // 3. Alarm Siren: เสียงหวอแจ้งเตือนสลับคลื่นถี่ สูง-ต่ำ (เล่น 2 ชุดสลับกันอย่างเร็ว)
                         const osc = audioCtx.createOscillator();
                         const gain = audioCtx.createGain();
                         osc.type = 'sawtooth';
@@ -488,13 +492,12 @@
                         break;
                     }
                     case "coin-get": {
-                        // 4. Coin Get!: เสียงเก็บเหรียญสไตล์ Mario (โน้ตตัวแรกต่ำ โน้ตตัวสองพุ่งสูงขึ้น)
                         const osc1 = audioCtx.createOscillator();
                         const osc2 = audioCtx.createOscillator();
                         const gain = audioCtx.createGain();
                         osc1.type = 'square'; osc2.type = 'square';
-                        osc1.frequency.setValueAtTime(987.77, audioCtx.currentTime); // โน้ต B5
-                        osc2.frequency.setValueAtTime(1318.51, audioCtx.currentTime + 0.08); // โน้ต E6
+                        osc1.frequency.setValueAtTime(987.77, audioCtx.currentTime); 
+                        osc2.frequency.setValueAtTime(1318.51, audioCtx.currentTime + 0.08); 
                         gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
                         gain.gain.setValueAtTime(0.05, audioCtx.currentTime + 0.08);
                         gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
@@ -504,7 +507,6 @@
                         break;
                     }
                     case "heavy-warning": {
-                        // 5. Heavy Warning: เสียงสัญญาณอับสัญญาณกระแทกทุ้มต่ำและหนักแน่น
                         const osc = audioCtx.createOscillator();
                         const gain = audioCtx.createGain();
                         osc.type = 'triangle';
@@ -517,7 +519,6 @@
                         break;
                     }
                     case "sub-sonar": {
-                        // 6. Sonar Ping: เสียงสัญญาณโซนาร์เรือดำน้ำ (สะท้อนยาวๆ ค่อยๆจางหักมุม)
                         const osc = audioCtx.createOscillator();
                         const gain = audioCtx.createGain();
                         osc.type = 'sine';
@@ -529,7 +530,6 @@
                         break;
                     }
                     case "digital-chime": {
-                        // 7. Digital Chime: เสียงกรุ๊งกริ๊งอิเล็กทรอนิกส์สว่างๆ ไพเราะ
                         const now = audioCtx.currentTime;
                         [587.33, 880, 1174.66].forEach((f, i) => {
                             const osc = audioCtx.createOscillator();
@@ -544,9 +544,8 @@
                         break;
                     }
                     case "level-up": {
-                        // 8. Level Up: ดนตรีสั้นขาขึ้น 4 สเต็ปให้ความรู้สึกปลดล็อกสำเร็จ
                         const now = audioCtx.currentTime;
-                        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                        const notes = [523.25, 659.25, 783.99, 1046.50]; 
                         notes.forEach((freq, idx) => {
                             const osc = audioCtx.createOscillator();
                             const gain = audioCtx.createGain();
@@ -560,7 +559,6 @@
                         break;
                     }
                     case "laser-shoot": {
-                        // 9. Laser Blast: เสียงยิงปืนเลเซอร์อวกาศ ความถี่รูดสไลด์ลงอย่างรวดเร็ว
                         const osc = audioCtx.createOscillator();
                         const gain = audioCtx.createGain();
                         osc.type = 'sawtooth';
@@ -573,7 +571,6 @@
                         break;
                     }
                     case "mech-click": {
-                        // 10. Mech Click: เสียงเหมือนสวิตช์กลไกเหล็กกระทบกันสั้นๆ แป๊กๆ หม่นๆ
                         const osc = audioCtx.createOscillator();
                         const gain = audioCtx.createGain();
                         osc.type = 'triangle';
@@ -589,14 +586,12 @@
             } catch(e) {}
         }
 
-        // ฟังก์ชันเปลี่ยนการเลือกเสียงและบันทึกรวมถึงเทสฟัง
         function changeSoundSetting(val) {
             selectedSound = val;
             localStorage.setItem('afk_selected_sound', val);
-            playBeepSound(); // ยิงเสียงทดสอบให้ผู้ใช้ได้ยินทันทีเมื่อเปลี่ยน
+            playBeepSound(); 
         }
 
-        // ปรับปรุงใหม่: ขยายขนาดข้อความแจ้งเตือนและหัวข้อระบบให้น่ามอง-ชัดเจนขึ้น (Large Toast Box)
         function showBottomWarning(charId, charName, emoji, initialSec) {
             const stack = document.getElementById('deathWarningStack');
             if (!stack) return;
@@ -643,7 +638,6 @@
                 document.getElementById('muteBtn').innerText = '🔇';
             }
 
-            // ดึงค่าการตั้งค่าเสียงที่บันทึกไว้ใน Browser มาเปิดใช้งาน
             const savedSound = localStorage.getItem('afk_selected_sound');
             if (savedSound) {
                 selectedSound = savedSound;
@@ -659,6 +653,26 @@
             isMuted = !isMuted;
             localStorage.setItem('afk_is_muted', isMuted);
             document.getElementById('muteBtn').innerText = isMuted ? '🔇' : '🔊';
+        }
+
+        // 🔊 ฟังก์ชันใหม่สำหรับการสลับ Mute เสียงรายบอทตัวนั้นๆ และเซฟลง LocalStorage
+        function toggleCharMute(id) {
+            const currentMuteState = localStorage.getItem(`afk_mute_${id}`) === 'true';
+            const newMuteState = !currentMuteState;
+            localStorage.setItem(`afk_mute_${id}`, newMuteState);
+            
+            // อัปเดตหน้าตาปุ่มทันทีโดยไม่ต้องรอ render โครงสร้างใหม่หมด
+            const btn = document.getElementById(`char_mute_btn_${id}`);
+            if (btn) {
+                btn.innerText = newMuteState ? '🔇' : '🔊';
+                if (newMuteState) {
+                    btn.classList.add('border-red-900', 'text-red-500');
+                    btn.classList.remove('border-zinc-700', 'text-zinc-400');
+                } else {
+                    btn.classList.remove('border-red-900', 'text-red-500');
+                    btn.classList.add('border-zinc-700', 'text-zinc-400');
+                }
+            }
         }
 
         function changeGridColumns(val) {
@@ -704,6 +718,7 @@
                     }
                     delete cachedCharacters[payload.old.id];
                     delete deathWarnedUnits[payload.old.id];
+                    localStorage.removeItem(`afk_mute_${payload.old.id}`); // ลบความจำ Mute เมื่อบอทโดนลบ
                     removeBottomWarning(payload.old.id);
                 } else {
                     const localStars = getLocalStars();
@@ -769,6 +784,9 @@
                 const currentFoodCalculated = Math.max(0, char.food_base - (elapsed * FOOD_DECAY));
                 const isDead = !isPaused && currentFoodCalculated <= 0;
 
+                // ตรวจสอบค่า Mute เดิมของบอทจาก LocalStorage
+                const isCharMuted = localStorage.getItem(`afk_mute_${id}`) === 'true';
+
                 return `
                 <div id="card_${id}" class="pixel-card p-4 rounded-none ${isDead ? 'dead-card' : ''} ${isPaused ? 'opacity-40 bg-zinc-900/40' : ''} ${isExpanded ? 'expanded' : 'collapsed'}">
                     <div class="flex items-center justify-between flex-wrap gap-2">
@@ -780,8 +798,15 @@
                                 <div class="flex items-center gap-2">
                                     <button onclick="toggleStar('${id}')" class="text-xl leading-none clickable ${isStarred ? 'star-active' : 'text-zinc-700'} transition-transform hover:scale-110">★</button>
                                     <h2 class="text-sm font-bold ${isDead ? 'text-zinc-600 line-through' : 'text-white'} tracking-wide truncate">${char.char_display_name}</h2>
-                                    <button onclick="togglePause('${id}')" class="w-6 h-6 flex items-center justify-center flex-shrink-0 bg-zinc-900 border border-zinc-700 text-[10px] font-bold hover:bg-zinc-800 hover:text-[#a1a1aa] clickable transition-colors">
+                                    
+                                    <!-- ปุ่มควบคุม Pause -->
+                                    <button onclick="togglePause('${id}')" class="w-6 h-6 flex items-center justify-center flex-shrink-0 bg-zinc-900 border border-zinc-700 text-[10px] font-bold hover:bg-zinc-800 hover:text-[#a1a1aa] clickable transition-colors" title="Pause/Resume">
                                         ${isPaused ? '▶' : '⏸'}
+                                    </button>
+
+                                    <!-- ปุ่มควบคุม Mute เสียง แยกรายตัวบอท -->
+                                    <button id="char_mute_btn_${id}" onclick="toggleCharMute('${id}')" class="w-6 h-6 flex items-center justify-center flex-shrink-0 bg-zinc-900 border ${isCharMuted ? 'border-red-900 text-red-500' : 'border-zinc-700 text-zinc-400'} text-[10px] font-bold hover:bg-zinc-800 hover:text-white clickable transition-colors" title="Toggle Bot Sound">
+                                        ${isCharMuted ? '🔇' : '🔊'}
                                     </button>
                                 </div>
                                 <p id="death_timer_${id}" class="text-[9px] pixel-font mt-1 font-bold text-zinc-500 whitespace-nowrap overflow-hidden">CALCULATING...</p>
@@ -825,7 +850,7 @@
 
         function tick() {
             const now = Date.now() / 1000;
-            let newlyCompletedFound = false;
+            let newlyCompletedFoundForChars = []; // เก็บ ID บอทที่มีภารกิจสำเร็จใหม่ในรอบนี้
 
             for (const id in cachedCharacters) {
                 const char = cachedCharacters[id];
@@ -863,7 +888,7 @@
 
                         if (remSec <= 300 && !deathWarnedUnits[id]) {
                             deathWarnedUnits[id] = true; 
-                            playBeepSound(); 
+                            playBeepSound(id); // ส่ง ID เพื่อตรวจสอบ Mute แยกรายบอทก่อนส่งเสียงเตือนเจียนตาย
                             showBottomWarning(id, char.char_display_name, char.emoji, remSec);
                         }
                         
@@ -912,7 +937,7 @@
                                             charEmoji: char.emoji,
                                             itemName: t.item_name
                                         };
-                                        newlyCompletedFound = true; 
+                                        newlyCompletedFoundForChars.push(char.id); // มาร์กบอทที่ทำภารกิจสำเร็จ
                                     }
                                 } else {
                                     remStr = formatTimeWithSeconds(left);
@@ -932,7 +957,14 @@
                 }
             }
 
-            if (newlyCompletedFound) playBeepSound();
+            // เล่นเสียงแจ้งเตือนความสำเร็จ ถ้ามีบอทที่ไม่ได้ Mute ทำเสร็จ
+            if (newlyCompletedFoundForChars.length > 0) {
+                // เช็กหาบอทตัวแรกที่ทำเสร็จและไม่ได้โดน Mute เพื่อเปิดเสียงเตือน
+                const unmutedBot = newlyCompletedFoundForChars.find(bId => localStorage.getItem(`afk_mute_${bId}`) !== 'true');
+                if (unmutedBot) {
+                    playBeepSound(unmutedBot);
+                }
+            }
             updateMasterPopupDOM();
             updateMissionsOverviewLive();
         }

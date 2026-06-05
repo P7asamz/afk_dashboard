@@ -160,6 +160,23 @@
             cursor: pointer;
         }
 
+        /* กล่องเลือกเสียงสไตล์ Cyberpunk */
+        .cyber-select {
+            background: #09090b;
+            color: #a1a1aa;
+            border: 1px solid #3f3f46;
+            padding: 0 8px;
+            height: 40px;
+            font-size: 9px;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .cyber-select:hover {
+            border-color: #a1a1aa;
+            color: #fff;
+        }
+
         #bottomMasterAlert {
             position: fixed;
             bottom: 24px;
@@ -259,7 +276,6 @@
 
     <div class="max-w-7xl mx-auto space-y-6">
         
-        <!-- HEADER ZONE -->
         <div class="cyber-header p-5 md:p-6 flex flex-col lg:flex-row justify-between items-center gap-6 rounded-none">
             <div class="flex items-center gap-4 w-full lg:w-auto">
                 <div class="w-12 h-12 bg-[#a1a1aa] text-black flex items-center justify-center text-2xl font-bold">🤖</div>
@@ -282,6 +298,19 @@
                 </div>
 
                 <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                    <select id="soundSelect" onchange="changeSoundSetting(this.value)" class="cyber-select pixel-font">
+                        <option value="retro-beep">🔊 RETRO SQUARE</option>
+                        <option value="cyber-ping">🔊 CYBER PING</option>
+                        <option value="alarm-siren">🚨 ALARM SIREN</option>
+                        <option value="coin-get">🪙 COIN GET!</option>
+                        <option value="heavy-warning">⚠️ HEAVY WARN</option>
+                        <option value="sub-sonar">⚓ SONAR PING</option>
+                        <option value="digital-chime">✨ DI-CHIME</option>
+                        <option value="level-up">🆙 LEVEL UP</option>
+                        <option value="laser-shoot">🔫 LASER BLAST</option>
+                        <option value="mech-click">⚙️ MECH CLICK</option>
+                    </select>
+
                     <button onclick="toggleMute()" id="muteBtn" class="bg-zinc-900/90 border border-zinc-700 text-base p-2 w-10 h-10 flex items-center justify-center hover:border-[#a1a1aa] hover:text-[#a1a1aa] transition-colors duration-200 clickable" title="Toggle Sound">🔊</button>
                     <button onclick="openMissionsOverview()" class="pixel-btn-neon text-[9px] h-10 px-4">📋 MISSIONS</button>
                     <button onclick="openModal('addCharModal')" class="pixel-btn text-[9px] h-10 px-4">REGISTER</button>
@@ -289,11 +318,9 @@
             </div>
         </div>
 
-        <!-- MAIN CONTAINER FOR CHARACTERS -->
         <div class="grid gap-4 transition-all duration-300" id="charactersContainer"></div>
     </div>
 
-    <!-- MASTER POPUP CONTAINER -->
     <div id="bottomMasterAlert">
         <div class="p-3 bg-zinc-950 border-4 border-zinc-500 shadow-2xl">
             <div class="flex items-center gap-2 mb-1">
@@ -304,10 +331,8 @@
         </div>
     </div>
 
-    <!-- STACK CONTAINER FOR HOVER TOAST WARNINGS -->
     <div id="deathWarningStack"></div>
 
-    <!-- MODAL: ALL MISSIONS OVERVIEW -->
     <div id="overviewModal" class="hidden modal-bg fixed inset-0 bg-black/80 flex justify-center items-center p-4 z-50">
         <div class="pixel-box p-6 w-full max-w-xl bg-[#121214]">
             <h3 class="text-xs font-bold text-[#a1a1aa] pixel-font mb-4">▶ ALL LIVE MISSIONS (DETAILED SECONDS)</h3>
@@ -318,7 +343,6 @@
         </div>
     </div>
 
-    <!-- MODAL: REGISTER NEW UNIT -->
     <div id="addCharModal" class="hidden modal-bg fixed inset-0 bg-black/80 flex justify-center items-center p-4 z-50">
         <div class="pixel-box p-6 w-full max-w-md bg-[#121214]">
             <h3 class="text-xs font-bold text-white pixel-font mb-4">▶ NEW UNIT</h3>
@@ -345,7 +369,6 @@
         </div>
     </div>
 
-    <!-- MODAL: EDIT UNIT STATUS -->
     <div id="editModal" class="hidden modal-bg fixed inset-0 bg-black/80 flex justify-center items-center p-4 z-50">
         <div class="pixel-box p-6 w-full max-w-md bg-[#121214]">
             <h3 class="text-xs font-bold text-white pixel-font mb-4">▶ EDIT PROFILE</h3>
@@ -372,7 +395,6 @@
         </div>
     </div>
 
-    <!-- MODAL: ADD MISSION -->
     <div id="afkModal" class="hidden modal-bg fixed inset-0 bg-black/80 flex justify-center items-center p-4 z-50">
         <div class="pixel-box p-6 w-full max-w-sm bg-[#121214]">
             <h3 class="text-xs font-bold text-white pixel-font mb-4">▶ ADD MISSION</h3>
@@ -400,6 +422,7 @@
         let expandedStates = {};
         let currentCols = 1; 
         let isMuted = false; 
+        let selectedSound = "retro-beep"; // เสียงเริ่มต้น
         let completedMissionsTracker = {}; 
         let deathWarnedUnits = {}; 
 
@@ -419,20 +442,158 @@
             return `${hrs}:${mins}:${secs}`;
         }
 
+        // 🎹 ฟังก์ชันกำเนิดคลื่นเสียงสังเคราะห์ (Web Audio API Synthesizer) มีให้เลือก 10 แบบไม่ซ้ำกัน
         function playBeepSound() {
             if (isMuted) return; 
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
-                oscillator.type = 'square';
-                oscillator.frequency.setValueAtTime(659.25, audioCtx.currentTime); 
-                gainNode.gain.setValueAtTime(0.08, audioCtx.currentTime);
-                oscillator.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-                oscillator.start();
-                oscillator.stop(audioCtx.currentTime + 0.12);
+                
+                switch(selectedSound) {
+                    case "retro-beep": {
+                        // 1. Retro Square: เสียงปิ๊ปสั้นสไตล์คลาสสิกเกมตู้คอมพิวเตอร์
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.type = 'square';
+                        osc.frequency.setValueAtTime(659.25, audioCtx.currentTime); 
+                        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                        osc.connect(gain); gain.connect(audioCtx.destination);
+                        osc.start(); osc.stop(audioCtx.currentTime + 0.12);
+                        break;
+                    }
+                    case "cyber-ping": {
+                        // 2. Cyber Ping: เสียงสะท้อนความถี่สูงแหลมสไตล์ Sci-fi
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(1500, audioCtx.currentTime);
+                        osc.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.3);
+                        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+                        osc.connect(gain); gain.connect(audioCtx.destination);
+                        osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+                        break;
+                    }
+                    case "alarm-siren": {
+                        // 3. Alarm Siren: เสียงหวอแจ้งเตือนสลับคลื่นถี่ สูง-ต่ำ (เล่น 2 ชุดสลับกันอย่างเร็ว)
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.type = 'sawtooth';
+                        osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+                        osc.frequency.linearRampToValueAtTime(400, audioCtx.currentTime + 0.15);
+                        osc.frequency.linearRampToValueAtTime(800, audioCtx.currentTime + 0.3);
+                        gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+                        gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
+                        osc.connect(gain); gain.connect(audioCtx.destination);
+                        osc.start(); osc.stop(audioCtx.currentTime + 0.35);
+                        break;
+                    }
+                    case "coin-get": {
+                        // 4. Coin Get!: เสียงเก็บเหรียญสไตล์ Mario (โน้ตตัวแรกต่ำ โน้ตตัวสองพุ่งสูงขึ้น)
+                        const osc1 = audioCtx.createOscillator();
+                        const osc2 = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc1.type = 'square'; osc2.type = 'square';
+                        osc1.frequency.setValueAtTime(987.77, audioCtx.currentTime); // โน้ต B5
+                        osc2.frequency.setValueAtTime(1318.51, audioCtx.currentTime + 0.08); // โน้ต E6
+                        gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                        gain.gain.setValueAtTime(0.05, audioCtx.currentTime + 0.08);
+                        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+                        osc1.connect(gain); osc2.connect(gain); gain.connect(audioCtx.destination);
+                        osc1.start(); osc1.stop(audioCtx.currentTime + 0.08);
+                        osc2.start(audioCtx.currentTime + 0.08); osc2.stop(audioCtx.currentTime + 0.3);
+                        break;
+                    }
+                    case "heavy-warning": {
+                        // 5. Heavy Warning: เสียงสัญญาณอับสัญญาณกระแทกทุ้มต่ำและหนักแน่น
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(120, audioCtx.currentTime);
+                        osc.frequency.linearRampToValueAtTime(70, audioCtx.currentTime + 0.4);
+                        gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+                        gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.45);
+                        osc.connect(gain); gain.connect(audioCtx.destination);
+                        osc.start(); osc.stop(audioCtx.currentTime + 0.45);
+                        break;
+                    }
+                    case "sub-sonar": {
+                        // 6. Sonar Ping: เสียงสัญญาณโซนาร์เรือดำน้ำ (สะท้อนยาวๆ ค่อยๆจางหักมุม)
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(2200, audioCtx.currentTime);
+                        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.7);
+                        osc.connect(gain); gain.connect(audioCtx.destination);
+                        osc.start(); osc.stop(audioCtx.currentTime + 0.7);
+                        break;
+                    }
+                    case "digital-chime": {
+                        // 7. Digital Chime: เสียงกรุ๊งกริ๊งอิเล็กทรอนิกส์สว่างๆ ไพเราะ
+                        const now = audioCtx.currentTime;
+                        [587.33, 880, 1174.66].forEach((f, i) => {
+                            const osc = audioCtx.createOscillator();
+                            const gain = audioCtx.createGain();
+                            osc.type = 'sine';
+                            osc.frequency.setValueAtTime(f, now + (i * 0.04));
+                            gain.gain.setValueAtTime(0.04, now + (i * 0.04));
+                            gain.gain.exponentialRampToValueAtTime(0.001, now + (i * 0.04) + 0.2);
+                            osc.connect(gain); gain.connect(audioCtx.destination);
+                            osc.start(now + (i * 0.04)); osc.stop(now + (i * 0.04) + 0.2);
+                        });
+                        break;
+                    }
+                    case "level-up": {
+                        // 8. Level Up: ดนตรีสั้นขาขึ้น 4 สเต็ปให้ความรู้สึกปลดล็อกสำเร็จ
+                        const now = audioCtx.currentTime;
+                        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                        notes.forEach((freq, idx) => {
+                            const osc = audioCtx.createOscillator();
+                            const gain = audioCtx.createGain();
+                            osc.type = 'triangle';
+                            osc.frequency.setValueAtTime(freq, now + (idx * 0.06));
+                            gain.gain.setValueAtTime(0.06, now + (idx * 0.06));
+                            gain.gain.linearRampToValueAtTime(0.001, now + (idx * 0.06) + 0.1);
+                            osc.connect(gain); gain.connect(audioCtx.destination);
+                            osc.start(now + (idx * 0.06)); osc.stop(now + (idx * 0.06) + 0.1);
+                        });
+                        break;
+                    }
+                    case "laser-shoot": {
+                        // 9. Laser Blast: เสียงยิงปืนเลเซอร์อวกาศ ความถี่รูดสไลด์ลงอย่างรวดเร็ว
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.type = 'sawtooth';
+                        osc.frequency.setValueAtTime(1800, audioCtx.currentTime);
+                        osc.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + 0.2);
+                        gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
+                        osc.connect(gain); gain.connect(audioCtx.destination);
+                        osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+                        break;
+                    }
+                    case "mech-click": {
+                        // 10. Mech Click: เสียงเหมือนสวิตช์กลไกเหล็กกระทบกันสั้นๆ แป๊กๆ หม่นๆ
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+                        osc.frequency.setValueAtTime(300, audioCtx.currentTime + 0.02);
+                        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                        gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+                        osc.connect(gain); gain.connect(audioCtx.destination);
+                        osc.start(); osc.stop(audioCtx.currentTime + 0.05);
+                        break;
+                    }
+                }
             } catch(e) {}
+        }
+
+        // ฟังก์ชันเปลี่ยนการเลือกเสียงและบันทึกรวมถึงเทสฟัง
+        function changeSoundSetting(val) {
+            selectedSound = val;
+            localStorage.setItem('afk_selected_sound', val);
+            playBeepSound(); // ยิงเสียงทดสอบให้ผู้ใช้ได้ยินทันทีเมื่อเปลี่ยน
         }
 
         // ปรับปรุงใหม่: ขยายขนาดข้อความแจ้งเตือนและหัวข้อระบบให้น่ามอง-ชัดเจนขึ้น (Large Toast Box)
@@ -480,6 +641,13 @@
             if (savedMute === 'true') {
                 isMuted = true;
                 document.getElementById('muteBtn').innerText = '🔇';
+            }
+
+            // ดึงค่าการตั้งค่าเสียงที่บันทึกไว้ใน Browser มาเปิดใช้งาน
+            const savedSound = localStorage.getItem('afk_selected_sound');
+            if (savedSound) {
+                selectedSound = savedSound;
+                document.getElementById('soundSelect').value = savedSound;
             }
 
             fetchData();

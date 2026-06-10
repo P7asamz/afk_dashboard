@@ -53,7 +53,6 @@
             border: 3px solid #27272a;
         }
 
-        /* การ์ดปกติโทนสีเข้ม */
         .pixel-card {
             background: #121214;
             border: 3px solid #202024;
@@ -65,7 +64,6 @@
             transform: translateY(-2px);
         }
 
-        /* 🖤 แก้ไขใหม่: สไตล์สำหรับตัวที่ตายแล้ว (เปลี่ยนเป็นสีดำสนิท ไม่ซ้ำกับตัวเตือนใกล้ตาย) */
         .dead-card {
             background: #000000 !important;
             border: 3px solid #27272a !important;
@@ -112,7 +110,7 @@
         }
         .bar-energy { background: #b91c1c; }
         .bar-brain { background: #52525b; }
-        .bar-dead { background: #18181b !important; } /* แถบพลังงานตัวที่ตาย */
+        .bar-dead { background: #18181b !important; }
 
         .clickable { cursor: pointer; }
 
@@ -160,7 +158,6 @@
             cursor: pointer;
         }
 
-        /* กล่องเลือกเสียงสไตล์ Cyberpunk */
         .cyber-select {
             background: #09090b;
             color: #a1a1aa;
@@ -190,14 +187,13 @@
             animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* Container ปรับความกว้างเพิ่มขึ้นรองรับกล่องแจ้งเตือนขนาดใหญ่ */
         #deathWarningStack {
             position: fixed;
             bottom: 24px;
             right: 24px;
             z-index: 10000;
             width: calc(100% - 48px);
-            max-width: 440px; /* ขยายความกว้างสูงสุดของพื้นที่แจ้งเตือน */
+            max-width: 440px;
             display: flex;
             flex-direction: column;
             gap: 12px;
@@ -211,22 +207,20 @@
             }
         }
 
-        /* ⚠️ แก้ไขใหม่: ป๊อปอัปแจ้งเตือนตายตัวใหญ่กว่าเดิมเด่นชัดขึ้นมาก (Large Toast) */
         .toast-warn-card {
             pointer-events: auto;
             background: #09090b;
-            border: 4px solid #dc2626; /* ขอบหนาขึ้น */
+            border: 4px solid #dc2626;
             box-shadow: 6px 6px 0px #450a0a;
-            padding: 14px; /* เพิ่มพื้นที่ด้านในกล่อง */
+            padding: 14px;
             overflow: hidden;
-            max-height: 54px; /* ขยายขนาดเริ่มต้นตอนยุบข้อความให้สูงขึ้น */
+            max-height: 54px;
             transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease;
             animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         
-        /* เมื่อเมาส์ชี้ไปโดน จะขยายกางลงมาแสดงรายละเอียดบอท */
         .toast-warn-card:hover {
-            max-height: 150px; /* เพิ่มพื้นที่ตอนขยายออก */
+            max-height: 150px;
             box-shadow: 6px 6px 16px rgba(220, 38, 38, 0.5);
         }
 
@@ -250,7 +244,8 @@
 
         .modal-bg {
             backdrop-filter: blur(4px);
-            transition: all 0.3s ease;
+            opacity: 0;
+            transition: opacity 0.2s ease;
         }
 
         .live-pulse { animation: pulse-gray 2.5s infinite; }
@@ -265,7 +260,6 @@
             50% { border-color: #f87171; box-shadow: 6px 6px 8px rgba(185, 28, 28, 0.5); }
             100% { border-color: #b91c1c; box-shadow: 6px 6px 0px #450a0a; }
         }
-        /* ตัวเตือนใกล้ตายสีแดงกะพริบเด่นชัดแยกจากตัวที่ตายแล้วชัดเจน */
         .near-death-card {
             background: #1a1010 !important;
             animation: pulse-red-border 1.5s infinite !important;
@@ -410,6 +404,28 @@
         </div>
     </div>
 
+    <div id="editMissionModal" class="hidden modal-bg fixed inset-0 bg-black/80 flex justify-center items-center p-4 z-50">
+        <div class="pixel-box p-6 w-full max-w-sm bg-[#121214]">
+            <h3 class="text-xs font-bold text-white pixel-font mb-4">▶ EDIT MISSION DETAILS</h3>
+            <input type="hidden" id="edit_m_char_id">
+            <input type="hidden" id="edit_m_timer_id">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-[9px] text-zinc-500 pixel-font mb-1">MISSION NAME</label>
+                    <input type="text" id="edit_m_task_name" class="w-full bg-black text-white border-2 border-zinc-800 p-3 text-sm outline-none focus:border-[#a1a1aa] transition-colors">
+                </div>
+                <div>
+                    <label class="block text-[9px] text-zinc-500 pixel-font mb-1">REMAINING TIME (MINUTES)</label>
+                    <input type="number" id="edit_m_minutes" class="w-full bg-black text-white border-2 border-zinc-800 p-3 text-sm outline-none focus:border-[#a1a1aa] transition-colors">
+                </div>
+            </div>
+            <div class="flex gap-4 mt-6">
+                <button onclick="closeModal('editMissionModal')" class="flex-1 bg-zinc-800 text-white py-2 font-bold text-xs hover:bg-zinc-700 transition-colors">CANCEL</button>
+                <button onclick="submitEditMission()" class="flex-1 pixel-btn text-xs py-2">SAVE CHANGES</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const SUPABASE_URL = "https://fupvihpfjstxqqcrmmmd.supabase.co"; 
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1cHZpaHBmanN0eHFxY3JtbW1kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk4ODU3NDksImV4cCI6MjA5NTQ2MTc0OX0.9uRBUPwDFlPB7cxpsi-HQeaiym5cjAU4u4uzUAFjYJU";
@@ -417,14 +433,15 @@
         const BRAIN_GROW = 100 / (2.5 * 60 * 60);
         const EMOJIS = ["🐬", "🐳", "🐋", "🦈", "🐙", "🐚", "🦀", "🦞", "🦐", "🐠", "🐡", "🐢", "🦦", "🐧", "⛵"];
 
-        let supabaseClient = null;
+        let supabaseClient;
         let cachedCharacters = {};
         let expandedStates = {};
         let currentCols = 1; 
         let isMuted = false; 
-        let selectedSound = "retro-beep"; // เสียงเริ่มต้น
+        let selectedSound = "retro-beep"; 
         let completedMissionsTracker = {}; 
         let deathWarnedUnits = {}; 
+        let globalLapModes = {}; 
 
         function formatTimeWithSeconds(totalSeconds) {
             if (totalSeconds <= 0) return 'SUCCESS';
@@ -442,170 +459,97 @@
             return `${hrs}:${mins}:${secs}`;
         }
 
-        // 🎹 ฟังก์ชันกำเนิดคลื่นเสียงสังเคราะห์ (Web Audio API Synthesizer) มีให้เลือก 10 แบบไม่ซ้ำกัน
-        // ปรับปรุง: รองรับการเช็ก Mute แยกรายตัวบอทได้
         function playBeepSound(specificCharId = null) {
             if (isMuted) return; 
-            
-            // เช็กระบบ Mute แยกรายตัว ถ้าส่ง ID บอทมาและบอทตัวนั้นโดน Mute อยู่ จะไม่ส่งเสียง
-            if (specificCharId && localStorage.getItem(`afk_mute_${specificCharId}`) === 'true') {
-                return;
-            }
+            if (specificCharId && localStorage.getItem(`afk_mute_${specificCharId}`) === 'true') return;
 
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                
                 switch(selectedSound) {
                     case "retro-beep": {
-                        const osc = audioCtx.createOscillator();
-                        const gain = audioCtx.createGain();
-                        osc.type = 'square';
-                        osc.frequency.setValueAtTime(659.25, audioCtx.currentTime); 
-                        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-                        osc.connect(gain); gain.connect(audioCtx.destination);
-                        osc.start(); osc.stop(audioCtx.currentTime + 0.12);
-                        break;
+                        const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+                        osc.type = 'square'; osc.frequency.setValueAtTime(659.25, audioCtx.currentTime); 
+                        gain.gain.setValueAtTime(0.08, audioCtx.currentTime); osc.connect(gain); gain.connect(audioCtx.destination);
+                        osc.start(); osc.stop(audioCtx.currentTime + 0.12); break;
                     }
                     case "cyber-ping": {
-                        const osc = audioCtx.createOscillator();
-                        const gain = audioCtx.createGain();
-                        osc.type = 'sine';
-                        osc.frequency.setValueAtTime(1500, audioCtx.currentTime);
+                        const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+                        osc.type = 'sine'; osc.frequency.setValueAtTime(1500, audioCtx.currentTime);
                         osc.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.3);
-                        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
-                        osc.connect(gain); gain.connect(audioCtx.destination);
-                        osc.start(); osc.stop(audioCtx.currentTime + 0.3);
-                        break;
+                        gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+                        osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.3); break;
                     }
                     case "alarm-siren": {
-                        const osc = audioCtx.createOscillator();
-                        const gain = audioCtx.createGain();
-                        osc.type = 'sawtooth';
-                        osc.frequency.setValueAtTime(800, audioCtx.currentTime);
-                        osc.frequency.linearRampToValueAtTime(400, audioCtx.currentTime + 0.15);
-                        osc.frequency.linearRampToValueAtTime(800, audioCtx.currentTime + 0.3);
-                        gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
-                        gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
-                        osc.connect(gain); gain.connect(audioCtx.destination);
-                        osc.start(); osc.stop(audioCtx.currentTime + 0.35);
-                        break;
+                        const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+                        osc.type = 'sawtooth'; osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+                        osc.frequency.linearRampToValueAtTime(400, audioCtx.currentTime + 0.15); osc.frequency.linearRampToValueAtTime(800, audioCtx.currentTime + 0.3);
+                        gain.gain.setValueAtTime(0.06, audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
+                        osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.35); break;
                     }
                     case "coin-get": {
-                        const osc1 = audioCtx.createOscillator();
-                        const osc2 = audioCtx.createOscillator();
-                        const gain = audioCtx.createGain();
-                        osc1.type = 'square'; osc2.type = 'square';
-                        osc1.frequency.setValueAtTime(987.77, audioCtx.currentTime); 
-                        osc2.frequency.setValueAtTime(1318.51, audioCtx.currentTime + 0.08); 
-                        gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-                        gain.gain.setValueAtTime(0.05, audioCtx.currentTime + 0.08);
-                        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
-                        osc1.connect(gain); osc2.connect(gain); gain.connect(audioCtx.destination);
-                        osc1.start(); osc1.stop(audioCtx.currentTime + 0.08);
-                        osc2.start(audioCtx.currentTime + 0.08); osc2.stop(audioCtx.currentTime + 0.3);
-                        break;
+                        const osc1 = audioCtx.createOscillator(); const osc2 = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+                        osc1.type = 'square'; osc2.type = 'square'; osc1.frequency.setValueAtTime(987.77, audioCtx.currentTime); osc2.frequency.setValueAtTime(1318.51, audioCtx.currentTime + 0.08); 
+                        gain.gain.setValueAtTime(0.05, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+                        osc1.connect(gain); osc2.connect(gain); gain.connect(audioCtx.destination); osc1.start(); osc1.stop(audioCtx.currentTime + 0.08); osc2.start(audioCtx.currentTime + 0.08); osc2.stop(audioCtx.currentTime + 0.3); break;
                     }
                     case "heavy-warning": {
-                        const osc = audioCtx.createOscillator();
-                        const gain = audioCtx.createGain();
-                        osc.type = 'triangle';
-                        osc.frequency.setValueAtTime(120, audioCtx.currentTime);
-                        osc.frequency.linearRampToValueAtTime(70, audioCtx.currentTime + 0.4);
-                        gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
-                        gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.45);
-                        osc.connect(gain); gain.connect(audioCtx.destination);
-                        osc.start(); osc.stop(audioCtx.currentTime + 0.45);
-                        break;
+                        const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+                        osc.type = 'triangle'; osc.frequency.setValueAtTime(120, audioCtx.currentTime); osc.frequency.linearRampToValueAtTime(70, audioCtx.currentTime + 0.4);
+                        gain.gain.setValueAtTime(0.25, audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.45);
+                        osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.45); break;
                     }
                     case "sub-sonar": {
-                        const osc = audioCtx.createOscillator();
-                        const gain = audioCtx.createGain();
-                        osc.type = 'sine';
-                        osc.frequency.setValueAtTime(2200, audioCtx.currentTime);
-                        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
-                        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.7);
-                        osc.connect(gain); gain.connect(audioCtx.destination);
-                        osc.start(); osc.stop(audioCtx.currentTime + 0.7);
-                        break;
+                        const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+                        osc.type = 'sine'; osc.frequency.setValueAtTime(2200, audioCtx.currentTime); gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.7); osc.connect(gain); gain.connect(audioCtx.destination);
+                        osc.start(); osc.stop(audioCtx.currentTime + 0.7); break;
                     }
                     case "digital-chime": {
                         const now = audioCtx.currentTime;
                         [587.33, 880, 1174.66].forEach((f, i) => {
-                            const osc = audioCtx.createOscillator();
-                            const gain = audioCtx.createGain();
-                            osc.type = 'sine';
-                            osc.frequency.setValueAtTime(f, now + (i * 0.04));
-                            gain.gain.setValueAtTime(0.04, now + (i * 0.04));
-                            gain.gain.exponentialRampToValueAtTime(0.001, now + (i * 0.04) + 0.2);
-                            osc.connect(gain); gain.connect(audioCtx.destination);
+                            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+                            osc.type = 'sine'; osc.frequency.setValueAtTime(f, now + (i * 0.04)); gain.gain.setValueAtTime(0.04, now + (i * 0.04));
+                            gain.gain.exponentialRampToValueAtTime(0.001, now + (i * 0.04) + 0.2); osc.connect(gain); gain.connect(audioCtx.destination);
                             osc.start(now + (i * 0.04)); osc.stop(now + (i * 0.04) + 0.2);
-                        });
-                        break;
+                        }); break;
                     }
                     case "level-up": {
-                        const now = audioCtx.currentTime;
-                        const notes = [523.25, 659.25, 783.99, 1046.50]; 
+                        const now = audioCtx.currentTime; const notes = [523.25, 659.25, 783.99, 1046.50]; 
                         notes.forEach((freq, idx) => {
-                            const osc = audioCtx.createOscillator();
-                            const gain = audioCtx.createGain();
-                            osc.type = 'triangle';
-                            osc.frequency.setValueAtTime(freq, now + (idx * 0.06));
-                            gain.gain.setValueAtTime(0.06, now + (idx * 0.06));
-                            gain.gain.linearRampToValueAtTime(0.001, now + (idx * 0.06) + 0.1);
-                            osc.connect(gain); gain.connect(audioCtx.destination);
+                            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+                            osc.type = 'triangle'; osc.frequency.setValueAtTime(freq, now + (idx * 0.06)); gain.gain.setValueAtTime(0.06, now + (idx * 0.06));
+                            gain.gain.linearRampToValueAtTime(0.001, now + (idx * 0.06) + 0.1); osc.connect(gain); gain.connect(audioCtx.destination);
                             osc.start(now + (idx * 0.06)); osc.stop(now + (idx * 0.06) + 0.1);
-                        });
-                        break;
+                        }); break;
                     }
                     case "laser-shoot": {
-                        const osc = audioCtx.createOscillator();
-                        const gain = audioCtx.createGain();
-                        osc.type = 'sawtooth';
-                        osc.frequency.setValueAtTime(1800, audioCtx.currentTime);
-                        osc.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + 0.2);
-                        gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-                        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
-                        osc.connect(gain); gain.connect(audioCtx.destination);
-                        osc.start(); osc.stop(audioCtx.currentTime + 0.2);
-                        break;
+                        const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+                        osc.type = 'sawtooth'; osc.frequency.setValueAtTime(1800, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + 0.2);
+                        gain.gain.setValueAtTime(0.05, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
+                        osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.2); break;
                     }
                     case "mech-click": {
-                        const osc = audioCtx.createOscillator();
-                        const gain = audioCtx.createGain();
-                        osc.type = 'triangle';
-                        osc.frequency.setValueAtTime(150, audioCtx.currentTime);
-                        osc.frequency.setValueAtTime(300, audioCtx.currentTime + 0.02);
-                        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                        gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
-                        osc.connect(gain); gain.connect(audioCtx.destination);
-                        osc.start(); osc.stop(audioCtx.currentTime + 0.05);
-                        break;
+                        const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+                        osc.type = 'triangle'; osc.frequency.setValueAtTime(150, audioCtx.currentTime); osc.frequency.setValueAtTime(300, audioCtx.currentTime + 0.02);
+                        gain.gain.setValueAtTime(0.15, audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+                        osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.05); break;
                     }
                 }
             } catch(e) {}
         }
 
         function changeSoundSetting(val) {
-            selectedSound = val;
-            localStorage.setItem('afk_selected_sound', val);
-            playBeepSound(); 
+            selectedSound = val; localStorage.setItem('afk_selected_sound', val); playBeepSound(); 
         }
 
         function showBottomWarning(charId, charName, emoji, initialSec) {
-            const stack = document.getElementById('deathWarningStack');
-            if (!stack) return;
-            if (document.getElementById(`toast_warn_${charId}`)) return;
-
+            const stack = document.getElementById('deathWarningStack'); if (!stack || document.getElementById(`toast_warn_${charId}`)) return;
             const toastHTML = `
                 <div id="toast_warn_${charId}" class="toast-warn-card flex flex-col justify-start">
                     <div class="flex justify-between items-center w-full">
-                        <div class="flex items-center gap-2">
-                            <span class="text-sm text-red-500 font-bold pixel-font tracking-wide animate-pulse">🚨 CRITICAL WARNING</span>
-                        </div>
+                        <div class="flex items-center gap-2"><span class="text-sm text-red-500 font-bold pixel-font tracking-wide animate-pulse">🚨 CRITICAL WARNING</span></div>
                         <button onclick="this.parentElement.parentElement.remove()" class="text-zinc-500 hover:text-white font-bold text-xs px-1 cursor-pointer transition-colors">✕</button>
                     </div>
-                    
                     <div class="toast-detail-zone flex items-center gap-4">
                         <span class="text-3xl animate-bounce flex-shrink-0">${emoji}</span>
                         <div>
@@ -613,160 +557,149 @@
                             <p id="toast_clock_${charId}" class="text-xs text-red-400 font-mono font-bold mt-1">เวลาที่เหลือ: ${formatDigitalTime(initialSec)}</p>
                         </div>
                     </div>
-                </div>
-            `;
+                </div>`;
             stack.insertAdjacentHTML('beforeend', toastHTML);
         }
 
-        function removeBottomWarning(charId) {
-            const el = document.getElementById(`toast_warn_${charId}`);
-            if (el) el.remove();
-        }
+        function removeBottomWarning(charId) { const el = document.getElementById(`toast_warn_${charId}`); if (el) el.remove(); }
 
         window.addEventListener('DOMContentLoaded', () => {
             supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             const savedCols = localStorage.getItem('afk_display_cols');
-            if(savedCols) {
-                currentCols = parseInt(savedCols);
-                document.getElementById('columnSlider').value = currentCols;
-            }
+            if(savedCols) { currentCols = parseInt(savedCols); document.getElementById('columnSlider').value = currentCols; }
             changeGridColumns(currentCols);
 
-            const savedMute = localStorage.getItem('afk_is_muted');
-            if (savedMute === 'true') {
-                isMuted = true;
-                document.getElementById('muteBtn').innerText = '🔇';
-            }
+            if (localStorage.getItem('afk_is_muted') === 'true') { isMuted = true; document.getElementById('muteBtn').innerText = '🔇'; }
+            const savedSound = localStorage.getItem('afk_selected_sound'); if (savedSound) { selectedSound = savedSound; document.getElementById('soundSelect').value = savedSound; }
 
-            const savedSound = localStorage.getItem('afk_selected_sound');
-            if (savedSound) {
-                selectedSound = savedSound;
-                document.getElementById('soundSelect').value = savedSound;
-            }
-
-            fetchData();
-            buildEmojiPools();
-            setInterval(tick, 1000);
+            fetchData(); buildEmojiPools(); setInterval(tick, 1000);
         });
 
-        function toggleMute() {
-            isMuted = !isMuted;
-            localStorage.setItem('afk_is_muted', isMuted);
-            document.getElementById('muteBtn').innerText = isMuted ? '🔇' : '🔊';
-        }
+        function toggleMute() { isMuted = !isMuted; localStorage.setItem('afk_is_muted', isMuted); document.getElementById('muteBtn').innerText = isMuted ? '🔇' : '🔊'; }
 
-        // 🔊 ฟังก์ชันใหม่สำหรับการสลับ Mute เสียงรายบอทตัวนั้นๆ และเซฟลง LocalStorage
         function toggleCharMute(id) {
-            const currentMuteState = localStorage.getItem(`afk_mute_${id}`) === 'true';
-            const newMuteState = !currentMuteState;
-            localStorage.setItem(`afk_mute_${id}`, newMuteState);
-            
-            // อัปเดตหน้าตาปุ่มทันทีโดยไม่ต้องรอ render โครงสร้างใหม่หมด
+            const newMuteState = !(localStorage.getItem(`afk_mute_${id}`) === 'true'); localStorage.setItem(`afk_mute_${id}`, newMuteState);
             const btn = document.getElementById(`char_mute_btn_${id}`);
             if (btn) {
                 btn.innerText = newMuteState ? '🔇' : '🔊';
-                if (newMuteState) {
-                    btn.classList.add('border-red-900', 'text-red-500');
-                    btn.classList.remove('border-zinc-700', 'text-zinc-400');
-                } else {
-                    btn.classList.remove('border-red-900', 'text-red-500');
-                    btn.classList.add('border-zinc-700', 'text-zinc-400');
-                }
+                if (newMuteState) { btn.classList.add('border-red-900', 'text-red-500'); btn.classList.remove('border-zinc-700', 'text-zinc-400'); }
+                else { btn.classList.remove('border-red-900', 'text-red-500'); btn.classList.add('border-zinc-700', 'text-zinc-400'); }
             }
         }
 
         function changeGridColumns(val) {
-            currentCols = parseInt(val);
-            document.getElementById('colValue').innerText = currentCols;
-            localStorage.setItem('afk_display_cols', currentCols);
+            currentCols = parseInt(val); document.getElementById('colValue').innerText = currentCols; localStorage.setItem('afk_display_cols', currentCols);
             const container = document.getElementById('charactersContainer');
-            if(container) {
-                container.style.display = 'grid';
-                container.style.gridTemplateColumns = `repeat(${currentCols}, minmax(0, 1fr))`;
-            }
+            if(container) { container.style.display = 'grid'; container.style.gridTemplateColumns = `repeat(${currentCols}, minmax(0, 1fr))`; }
         }
 
-        function getLocalStars() {
-            const stars = localStorage.getItem('afk_stars');
-            return stars ? JSON.parse(stars) : {};
-        }
-
-        function saveLocalStar(id, state) {
-            const stars = getLocalStars();
-            stars[id] = state;
-            localStorage.setItem('afk_stars', JSON.stringify(stars));
-        }
+        function getLocalStars() { const stars = localStorage.getItem('afk_stars'); return stars ? JSON.parse(stars) : {}; }
+        function saveLocalStar(id, state) { const stars = getLocalStars(); stars[id] = state; localStorage.setItem('afk_stars', JSON.stringify(stars)); }
 
         async function fetchData() {
             const { data } = await supabaseClient.from('afk_characters').select('*');
             if(data) {
                 const localStars = getLocalStars();
                 data.forEach(d => {
-                    cachedCharacters[d.id] = {
-                        ...d, 
-                        timers: d.timers || [],
-                        is_starred: localStars[d.id] || false
-                    };
+                    cachedCharacters[d.id] = { ...d, timers: d.timers || [], laps: d.laps || 0, is_starred: localStars[d.id] || false };
                     if (expandedStates[d.id] === undefined) expandedStates[d.id] = true;
+                    if (globalLapModes[d.id] === undefined) globalLapModes[d.id] = 'plus'; 
                 });
                 renderStructure();
             }
             supabaseClient.channel('db').on('postgres_changes', {event:'*', schema:'public', table:'afk_characters'}, payload => {
                 if(payload.eventType === 'DELETE') {
-                    for (let key in completedMissionsTracker) {
-                        if (key.startsWith(payload.old.id + "_")) delete completedMissionsTracker[key];
-                    }
-                    delete cachedCharacters[payload.old.id];
-                    delete deathWarnedUnits[payload.old.id];
-                    localStorage.removeItem(`afk_mute_${payload.old.id}`); // ลบความจำ Mute เมื่อบอทโดนลบ
-                    removeBottomWarning(payload.old.id);
+                    for (let key in completedMissionsTracker) { if (key.startsWith(payload.old.id + "_")) delete completedMissionsTracker[key]; }
+                    delete cachedCharacters[payload.old.id]; delete deathWarnedUnits[payload.old.id]; removeBottomWarning(payload.old.id);
                 } else {
-                    const localStars = getLocalStars();
-                    const nextTimerIds = (payload.new.timers || []).map(t => t.id);
-                    for (let key in completedMissionsTracker) {
-                        if (key.startsWith(payload.new.id + "_")) {
-                            const tId = key.split('_')[1];
-                            if (!nextTimerIds.includes(tId)) delete completedMissionsTracker[key];
-                        }
-                    }
-                    if (cachedCharacters[payload.new.id] && payload.new.food_base > cachedCharacters[payload.new.id].food_base) {
-                        delete deathWarnedUnits[payload.new.id];
-                        removeBottomWarning(payload.new.id);
-                    }
-                    cachedCharacters[payload.new.id] = {
-                        ...payload.new, 
-                        timers: payload.new.timers || [],
-                        is_starred: localStars[payload.new.id] || false
-                    };
+                    const localStars = getLocalStars(); const nextTimerIds = (payload.new.timers || []).map(t => t.id);
+                    for (let key in completedMissionsTracker) { if (key.startsWith(payload.new.id + "_")) { const tId = key.split('_')[1]; if (!nextTimerIds.includes(tId)) delete completedMissionsTracker[key]; } }
+                    if (cachedCharacters[payload.new.id] && payload.new.food_base > cachedCharacters[payload.new.id].food_base) { delete deathWarnedUnits[payload.new.id]; removeBottomWarning(payload.new.id); }
+                    cachedCharacters[payload.new.id] = { ...payload.new, timers: payload.new.timers || [], laps: payload.new.laps || 0, is_starred: localStars[payload.new.id] || false };
                 }
-                renderStructure();
-                updateMasterPopupDOM();
+                renderStructure(); updateMasterPopupDOM();
             }).subscribe();
         }
 
         function toggleExpand(id) { expandedStates[id] = !expandedStates[id]; renderStructure(); }
-        function toggleStar(id) {
-            const newState = !cachedCharacters[id].is_starred;
-            cachedCharacters[id].is_starred = newState;
-            saveLocalStar(id, newState);
-            renderStructure();
-        }
+        function toggleStar(id) { const newState = !cachedCharacters[id].is_starred; cachedCharacters[id].is_starred = newState; saveLocalStar(id, newState); renderStructure(); }
 
         function getSecondsUntilDeath(char) {
-            if (char.is_paused) return Infinity; 
+            if (char.is_paused) return Infinity; const now = Date.now() / 1000; const elapsed = now - char.status_updated_at;
+            const currentFood = Math.max(0, char.food_base - (elapsed * FOOD_DECAY)); if (currentFood <= 0) return 0; return currentFood / FOOD_DECAY;
+        }
+
+        function toggleLapMode(id, event) {
+            if(event) event.stopPropagation();
+            globalLapModes[id] = globalLapModes[id] === 'plus' ? 'minus' : 'plus';
+            const modeIndicator = document.getElementById(`lap_mode_${id}`);
+            if(modeIndicator) {
+                modeIndicator.innerText = globalLapModes[id] === 'plus' ? '+' : '-';
+                modeIndicator.className = globalLapModes[id] === 'plus' ? "text-green-400 font-bold" : "text-red-400 font-bold";
+            }
+        }
+
+        async function executeLapClick(id) {
+            const char = cachedCharacters[id]; if (!char) return;
+            const currentMode = globalLapModes[id] || 'plus';
+            let currentLaps = char.laps || 0;
+            
+            let nextLaps = currentMode === 'plus' ? currentLaps + 1 : currentLaps - 1;
+            if(nextLaps < 0) nextLaps = 0;
+
+            cachedCharacters[id].laps = nextLaps;
+            const el = document.getElementById(`lap_val_${id}`);
+            if(el) el.innerText = nextLaps;
+
+            await supabaseClient.from('afk_characters').update({ laps: nextLaps }).eq('id', id);
+        }
+
+        function openEditMissionModal(charId, timerId, event) {
+            if(event) event.stopPropagation(); 
+            const char = cachedCharacters[charId]; if (!char) return;
+            const targetTimer = char.timers.find(t => t.id === timerId); if (!targetTimer) return;
+
+            document.getElementById('edit_m_char_id').value = charId;
+            document.getElementById('edit_m_timer_id').value = timerId;
+            document.getElementById('edit_m_task_name').value = targetTimer.item_name;
+
             const now = Date.now() / 1000;
-            const elapsed = now - char.status_updated_at;
-            const currentFood = Math.max(0, char.food_base - (elapsed * FOOD_DECAY));
-            if (currentFood <= 0) return 0;
-            return currentFood / FOOD_DECAY;
+            let currentRemMin = char.is_paused 
+                ? Math.round((targetTimer.saved_remaining_sec || 0) / 60)
+                : Math.round(Math.max(0, targetTimer.target_time - now) / 60);
+
+            document.getElementById('edit_m_minutes').value = currentRemMin;
+            openModal('editMissionModal');
+        }
+
+        async function submitEditMission() {
+            const charId = document.getElementById('edit_m_char_id').value;
+            const timerId = document.getElementById('edit_m_timer_id').value;
+            const newName = document.getElementById('edit_m_task_name').value.trim() || "Working";
+            const newMins = parseInt(document.getElementById('edit_m_minutes').value) || 0;
+
+            const char = cachedCharacters[charId]; if (!char) return;
+            const now = Date.now() / 1000;
+
+            const updatedTimers = char.timers.map(t => {
+                if (t.id === timerId) {
+                    const updatedObj = { ...t, item_name: newName };
+                    if (char.is_paused) { updatedObj.saved_remaining_sec = newMins * 60; } 
+                    else { updatedObj.target_time = now + (newMins * 60); }
+                    return updatedObj;
+                }
+                return t;
+            });
+
+            delete completedMissionsTracker[`${charId}_${timerId}`];
+            await supabaseClient.from('afk_characters').update({ timers: updatedTimers }).eq('id', charId);
+            closeModal('editMissionModal');
         }
 
         function renderStructure() {
             const container = document.getElementById('charactersContainer');
-            
             const sortedList = Object.values(cachedCharacters).sort((a, b) => {
-                const aDead = getSecondsUntilDeath(a) === 0;
-                const bDead = getSecondsUntilDeath(b) === 0;
+                const aDead = getSecondsUntilDeath(a) === 0, bDead = getSecondsUntilDeath(b) === 0;
                 if (aDead !== bDead) return aDead ? 1 : -1;
                 if (a.is_starred !== b.is_starred) return a.is_starred ? -1 : 1;
                 if (a.is_paused !== b.is_paused) return a.is_paused ? 1 : -1;
@@ -774,62 +707,55 @@
             });
 
             container.innerHTML = sortedList.map(char => {
-                const id = char.id;
-                const isPaused = char.is_paused;
-                const isExpanded = expandedStates[id];
-                const isStarred = char.is_starred;
-                
-                const now = Date.now() / 1000;
-                const elapsed = isPaused ? 0 : (now - char.status_updated_at);
-                const currentFoodCalculated = Math.max(0, char.food_base - (elapsed * FOOD_DECAY));
-                const isDead = !isPaused && currentFoodCalculated <= 0;
-
-                // ตรวจสอบค่า Mute เดิมของบอทจาก LocalStorage
+                const id = char.id; const isPaused = char.is_paused; const isExpanded = expandedStates[id]; const isStarred = char.is_starred;
+                const currentLaps = char.laps || 0; const now = Date.now() / 1000; const elapsed = isPaused ? 0 : (now - char.status_updated_at);
+                const currentFoodCalculated = Math.max(0, char.food_base - (elapsed * FOOD_DECAY)); const isDead = !isPaused && currentFoodCalculated <= 0;
                 const isCharMuted = localStorage.getItem(`afk_mute_${id}`) === 'true';
+                const currentLapMode = globalLapModes[id] || 'plus';
 
                 return `
                 <div id="card_${id}" class="pixel-card p-4 rounded-none ${isDead ? 'dead-card' : ''} ${isPaused ? 'opacity-40 bg-zinc-900/40' : ''} ${isExpanded ? 'expanded' : 'collapsed'}">
                     <div class="flex items-center justify-between flex-wrap gap-2">
-                        <div class="flex items-center gap-3 truncate max-w-[85%]">
-                            <div onclick="openEditModal('${id}')" class="w-11 h-11 bg-zinc-950 border-2 border-zinc-800 flex items-center justify-center text-2xl flex-shrink-0 clickable hover:border-[#a1a1aa] transition-all">
-                                ${char.emoji}
-                            </div>
+                        <div class="flex items-center gap-3 truncate max-w-[75%]">
+                            <div onclick="openEditModal('${id}')" class="w-11 h-11 bg-zinc-950 border-2 border-zinc-800 flex items-center justify-center text-2xl flex-shrink-0 clickable hover:border-[#a1a1aa] transition-all">${char.emoji}</div>
                             <div class="truncate">
                                 <div class="flex items-center gap-2">
                                     <button onclick="toggleStar('${id}')" class="text-xl leading-none clickable ${isStarred ? 'star-active' : 'text-zinc-700'} transition-transform hover:scale-110">★</button>
                                     <h2 class="text-sm font-bold ${isDead ? 'text-zinc-600 line-through' : 'text-white'} tracking-wide truncate">${char.char_display_name}</h2>
-                                    
-                                    <!-- ปุ่มควบคุม Pause -->
-                                    <button onclick="togglePause('${id}')" class="w-6 h-6 flex items-center justify-center flex-shrink-0 bg-zinc-900 border border-zinc-700 text-[10px] font-bold hover:bg-zinc-800 hover:text-[#a1a1aa] clickable transition-colors" title="Pause/Resume">
+                                    <button onclick="togglePause('${id}')" class="w-6 h-6 flex items-center justify-center bg-zinc-900 border border-zinc-700 text-[10px] font-bold hover:bg-zinc-800 hover:text-[#a1a1aa] clickable transition-colors">
                                         ${isPaused ? '▶' : '⏸'}
                                     </button>
-
-                                    <!-- ปุ่มควบคุม Mute เสียง แยกรายตัวบอท -->
-                                    <button id="char_mute_btn_${id}" onclick="toggleCharMute('${id}')" class="w-6 h-6 flex items-center justify-center flex-shrink-0 bg-zinc-900 border ${isCharMuted ? 'border-red-900 text-red-500' : 'border-zinc-700 text-zinc-400'} text-[10px] font-bold hover:bg-zinc-800 hover:text-white clickable transition-colors" title="Toggle Bot Sound">
+                                    <button id="char_mute_btn_${id}" onclick="toggleCharMute('${id}')" class="w-6 h-6 flex items-center justify-center bg-zinc-900 border ${isCharMuted ? 'border-red-900 text-red-500' : 'border-zinc-700 text-zinc-400'} text-[10px] font-bold hover:bg-zinc-800 hover:text-white clickable transition-colors">
                                         ${isCharMuted ? '🔇' : '🔊'}
                                     </button>
                                 </div>
                                 <p id="death_timer_${id}" class="text-[9px] pixel-font mt-1 font-bold text-zinc-500 whitespace-nowrap overflow-hidden">CALCULATING...</p>
                             </div>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <button onclick="toggleExpand('${id}')" class="p-1 text-xs text-zinc-500 font-bold pixel-font clickable hover:text-white transition-colors">${isExpanded ? '▲' : '▼'}</button>
-                            <button onclick="deleteChar('${id}')" class="text-zinc-600 hover:text-red-500 text-xs font-bold px-1 transition-colors">X</button>
+                        <div class="flex items-center gap-3">
+                            <div class="flex items-center bg-zinc-950 border border-zinc-800 text-[9px] pixel-font h-7 select-none">
+                                <div onclick="executeLapClick('${id}')" class="px-2.5 h-full flex items-center text-zinc-300 font-bold border-r border-zinc-900 active:bg-zinc-900 clickable">
+                                    L:<span id="lap_val_${id}">${currentLaps}</span>
+                                </div>
+                                <div onclick="toggleLapMode('${id}', event)" class="px-2 h-full flex items-center bg-black/50 active:bg-zinc-900 clickable">
+                                    <span id="lap_mode_${id}" class="${currentLapMode === 'plus' ? 'text-green-400' : 'text-red-400'} font-bold">${currentLapMode === 'plus' ? '+' : '-'}</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button onclick="toggleExpand('${id}')" class="p-1 text-xs text-zinc-500 font-bold pixel-font clickable hover:text-white transition-colors">${isExpanded ? '▲' : '▼'}</button>
+                                <button onclick="deleteChar('${id}')" class="text-zinc-600 hover:text-red-500 text-xs font-bold px-1 transition-colors">X</button>
+                            </div>
                         </div>
                     </div>
 
                     <div class="expand-content">
                         <div class="grid grid-cols-1 gap-3 mb-4">
                             <div class="p-2 border border-zinc-900 bg-black/40 hover:border-red-500/40 transition-colors clickable" onclick="quickResetFood('${id}')">
-                                <div class="flex justify-between text-[9px] pixel-font ${isDead ? 'text-zinc-700' : 'text-red-400'} mb-1">
-                                    <span>HP:ENERGY</span> <span id="tf_${id}">0.0%</span>
-                                </div>
+                                <div class="flex justify-between text-[9px] pixel-font ${isDead ? 'text-zinc-700' : 'text-red-400'} mb-1"><span>HP:ENERGY</span> <span id="tf_${id}">0.0%</span></div>
                                 <div class="rpg-bar-container"><div id="bf_${id}" class="h-full ${isDead ? 'bar-dead' : 'bar-energy'} transition-all duration-500"></div></div>
                             </div>
                             <div class="p-2 border border-zinc-900 bg-black/40 hover:border-zinc-500/40 transition-colors clickable" onclick="quickResetBrain('${id}')">
-                                <div class="flex justify-between text-[9px] pixel-font text-zinc-400 mb-1">
-                                    <span>MP:BRAIN</span> <span id="tb_${id}">0.0%</span>
-                                </div>
+                                <div class="flex justify-between text-[9px] pixel-font text-zinc-400 mb-1"><span>MP:BRAIN</span> <span id="tb_${id}">0.0%</span></div>
                                 <div class="rpg-bar-container"><div id="bb_${id}" class="h-full bar-brain transition-all duration-500"></div></div>
                             </div>
                         </div>
@@ -844,21 +770,17 @@
                     </div>
                 </div>`;
             }).join('');
-            
             changeGridColumns(currentCols);
         }
 
         function tick() {
-            const now = Date.now() / 1000;
-            let newlyCompletedFoundForChars = []; // เก็บ ID บอทที่มีภารกิจสำเร็จใหม่ในรอบนี้
+            const now = Date.now() / 1000; let newlyCompletedFoundForChars = [];
 
             for (const id in cachedCharacters) {
-                const char = cachedCharacters[id];
-                let f = char.food_base, b = char.brain_base;
+                const char = cachedCharacters[id]; let f = char.food_base, b = char.brain_base;
                 if(!char.is_paused) {
                     const elapsed = now - char.status_updated_at;
-                    f = Math.max(0, f - (elapsed * FOOD_DECAY));
-                    b = Math.min(100, b + (elapsed * BRAIN_GROW));
+                    f = Math.max(0, f - (elapsed * FOOD_DECAY)); b = Math.min(100, b + (elapsed * BRAIN_GROW));
                 }
                 
                 const elCard = document.getElementById(`card_${id}`);
@@ -866,90 +788,50 @@
                 const elToastClock = document.getElementById(`toast_clock_${id}`);
                 
                 if (elDeath) {
-                    if (char.is_paused) {
-                        elDeath.innerText = "⏸ PAUSED";
-                        elDeath.className = "text-[9px] pixel-font mt-1 text-zinc-600";
-                        if (elCard) elCard.classList.remove('near-death-card');
-                    } else if (f <= 0) {
-                        elDeath.innerText = "💀 DIED (0%)";
-                        elDeath.className = "text-[9px] pixel-font mt-1 text-zinc-600 font-bold";
-                        if (elCard) {
-                            elCard.classList.remove('near-death-card');
-                            if (!elCard.classList.contains('dead-card')) elCard.classList.add('dead-card');
-                        }
+                    if (char.is_paused) { elDeath.innerText = "⏸ PAUSED"; elDeath.className = "text-[9px] pixel-font mt-1 text-zinc-600"; if (elCard) elCard.classList.remove('near-death-card'); } 
+                    else if (f <= 0) {
+                        elDeath.innerText = "💀 DIED (0%)"; elDeath.className = "text-[9px] pixel-font mt-1 text-zinc-600 font-bold";
+                        if (elCard) { elCard.classList.remove('near-death-card'); if (!elCard.classList.contains('dead-card')) elCard.classList.add('dead-card'); }
                         removeBottomWarning(id); 
                     } else {
-                        const remSec = f / FOOD_DECAY;
-                        elDeath.innerText = `💀 DIE: ${formatDigitalTime(remSec)}`;
-                        
-                        if (elToastClock) {
-                            elToastClock.innerText = `เวลาที่เหลือ: ${formatDigitalTime(remSec)}`;
-                        }
+                        const remSec = f / FOOD_DECAY; elDeath.innerText = `💀 DIE: ${formatDigitalTime(remSec)}`;
+                        if (elToastClock) elToastClock.innerText = `เวลาที่เหลือ: ${formatDigitalTime(remSec)}`;
 
-                        if (remSec <= 300 && !deathWarnedUnits[id]) {
-                            deathWarnedUnits[id] = true; 
-                            playBeepSound(id); // ส่ง ID เพื่อตรวจสอบ Mute แยกรายบอทก่อนส่งเสียงเตือนเจียนตาย
-                            showBottomWarning(id, char.char_display_name, char.emoji, remSec);
-                        }
-                        
-                        if (elCard) {
-                            if (remSec <= 300) {
-                                elCard.classList.add('near-death-card');
-                                elCard.classList.remove('dead-card');
-                            } else {
-                                elCard.classList.remove('near-death-card');
-                                elCard.classList.remove('dead-card');
-                            }
-                        }
-                        
-                        if (remSec < 900) {
-                            elDeath.className = "text-[9px] pixel-font mt-1 text-red-400 font-bold animate-bounce";
-                        } else {
-                            elDeath.className = "text-[9px] pixel-font mt-1 text-zinc-400";
-                        }
+                        if (remSec <= 300 && !deathWarnedUnits[id]) { deathWarnedUnits[id] = true; playBeepSound(id); showBottomWarning(id, char.char_display_name, char.emoji, remSec); }
+                        if (elCard) { if (remSec <= 300) { elCard.classList.add('near-death-card'); elCard.classList.remove('dead-card'); } else { elCard.classList.remove('near-death-card'); elCard.classList.remove('dead-card'); } }
+                        if (remSec < 900) elDeath.className = "text-[9px] pixel-font mt-1 text-red-400 font-bold animate-bounce";
+                        else elDeath.className = "text-[9px] pixel-font mt-1 text-zinc-400";
                     }
                 }
 
                 const elF = document.getElementById(`bf_${id}`), elB = document.getElementById(`bb_${id}`);
                 if(elF) {
-                    elF.style.width = f + '%';
-                    document.getElementById(`tf_${id}`).innerText = f.toFixed(1) + '%';
-                    elB.style.width = b + '%';
-                    document.getElementById(`tb_${id}`).innerText = b.toFixed(1) + '%';
+                    elF.style.width = f + '%'; document.getElementById(`tf_${id}`).innerText = f.toFixed(1) + '%';
+                    elB.style.width = b + '%'; document.getElementById(`tb_${id}`).innerText = b.toFixed(1) + '%';
                     
                     const tContainer = document.getElementById(`timers_${id}`);
                     if(char.timers.length > 0) {
                         tContainer.innerHTML = char.timers.map(t => {
-                            let remStr = "";
-                            let isDone = false;
-                            
-                            if (char.is_paused) {
-                                remStr = 'PAUSED';
-                            } else {
+                            let remStr = ""; let isDone = false;
+                            if (char.is_paused) { remStr = 'PAUSED'; } 
+                            else {
                                 const left = t.target_time - now;
                                 if (left <= 0) {
-                                    remStr = 'SUCCESS';
-                                    isDone = true;
+                                    remStr = 'SUCCESS'; isDone = true;
                                     const trackerKey = `${char.id}_${t.id}`;
                                     if (!completedMissionsTracker[trackerKey]) {
-                                        completedMissionsTracker[trackerKey] = {
-                                            charName: char.char_display_name,
-                                            charEmoji: char.emoji,
-                                            itemName: t.item_name
-                                        };
-                                        newlyCompletedFoundForChars.push(char.id); // มาร์กบอทที่ทำภารกิจสำเร็จ
+                                        completedMissionsTracker[trackerKey] = { charName: char.char_display_name, charEmoji: char.emoji, itemName: t.item_name };
+                                        newlyCompletedFoundForChars.push(char.id);
                                     }
-                                } else {
-                                    remStr = formatTimeWithSeconds(left);
-                                }
+                                } else { remStr = formatTimeWithSeconds(left); }
                             }
                             
                             return `
-                            <div class="p-2 bg-black/60 border ${isDone ? 'border-zinc-500 bg-zinc-900/20' : 'border-zinc-900'} flex justify-between items-center transition-all duration-300">
+                            <div onclick="openEditMissionModal('${id}', '${t.id}', event)" class="p-2 bg-black/60 border ${isDone ? 'border-zinc-500 bg-zinc-900/20' : 'border-zinc-900'} flex justify-between items-center hover:border-zinc-500 transition-all duration-300 clickable">
                                 <span class="text-xs font-bold text-zinc-400 truncate pr-2">▪ ${t.item_name}</span>
                                 <div class="flex items-center gap-2">
                                     <span class="text-[9px] ${isDone ? 'bg-zinc-700 text-white animate-pulse' : 'bg-zinc-800 text-zinc-300'} px-1.5 py-0.5 border border-zinc-700 font-mono">${remStr}</span>
-                                    <button onclick="deleteActivity('${id}', '${t.id}')" class="text-zinc-600 hover:text-white font-bold px-1 text-xs transition-colors">✕</button>
+                                    <button onclick="event.stopPropagation(); deleteActivity('${id}', '${t.id}')" class="text-zinc-600 hover:text-white font-bold px-1 text-xs transition-colors">✕</button>
                                 </div>
                             </div>`;
                         }).join('');
@@ -957,97 +839,52 @@
                 }
             }
 
-            // เล่นเสียงแจ้งเตือนความสำเร็จ ถ้ามีบอทที่ไม่ได้ Mute ทำเสร็จ
             if (newlyCompletedFoundForChars.length > 0) {
-                // เช็กหาบอทตัวแรกที่ทำเสร็จและไม่ได้โดน Mute เพื่อเปิดเสียงเตือน
                 const unmutedBot = newlyCompletedFoundForChars.find(bId => localStorage.getItem(`afk_mute_${bId}`) !== 'true');
-                if (unmutedBot) {
-                    playBeepSound(unmutedBot);
-                }
+                if (unmutedBot) playBeepSound(unmutedBot);
             }
-            updateMasterPopupDOM();
-            updateMissionsOverviewLive();
+            updateMasterPopupDOM(); updateMissionsOverviewLive();
         }
 
         function updateMasterPopupDOM() {
-            const popupEl = document.getElementById('bottomMasterAlert');
-            const titleEl = document.getElementById('masterAlertTitle');
-            const listEl = document.getElementById('masterAlertList');
+            const popupEl = document.getElementById('bottomMasterAlert'); const titleEl = document.getElementById('masterAlertTitle'); const listEl = document.getElementById('masterAlertList');
             const totalDone = Object.keys(completedMissionsTracker).length;
-            
-            if (totalDone === 0) {
-                popupEl.style.display = 'none';
-                return;
-            }
+            if (totalDone === 0) { popupEl.style.display = 'none'; return; }
             
             titleEl.innerText = `${totalDone} MISSION${totalDone > 1 ? 'S' : ''} COMPLETED!`;
             let listHTML = "";
             for (let key in completedMissionsTracker) {
                 const data = completedMissionsTracker[key];
                 listHTML += `<div class="truncate font-semibold text-zinc-300 py-0.5 border-b border-zinc-900/30">
-                    ${data.charEmoji} <span class="text-white">${data.itemName}</span> 
-                    <span class="text-[9px] text-zinc-500 pixel-font">(${data.charName})</span>
+                    ${data.charEmoji} <span class="text-white">${data.itemName}</span> <span class="text-[9px] text-zinc-500 pixel-font">(${data.charName})</span>
                 </div>`;
             }
-            listEl.innerHTML = listHTML;
-            popupEl.style.display = 'block';
+            listEl.innerHTML = listHTML; popupEl.style.display = 'block';
         }
 
-        function openMissionsOverview() {
-            openModal('overviewModal');
-            updateMissionsOverviewLive();
-        }
+        function openMissionsOverview() { openModal('overviewModal'); updateMissionsOverviewLive(); }
 
         function updateMissionsOverviewLive() {
-            const overviewContainer = document.getElementById('overview_list');
-            if (!overviewContainer || document.getElementById('overviewModal').classList.contains('hidden')) return;
-
-            const now = Date.now() / 1000;
-            let allMissions = [];
+            const overviewContainer = document.getElementById('overview_list'); if (!overviewContainer || document.getElementById('overviewModal').classList.contains('hidden')) return;
+            const now = Date.now() / 1000; let allMissions = [];
 
             for (const charId in cachedCharacters) {
                 const char = cachedCharacters[charId];
                 char.timers.forEach(t => {
-                    let remSec = 0;
-                    let isDone = false;
-                    if (char.is_paused) {
-                        remSec = t.saved_remaining_sec || 0;
-                    } else {
-                        remSec = t.target_time - now;
-                        if (remSec <= 0) { remSec = 0; isDone = true; }
-                    }
-                    allMissions.push({
-                        charName: char.char_display_name,
-                        charEmoji: char.emoji,
-                        charId: charId,
-                        missionId: t.id,
-                        itemName: t.item_name,
-                        remSec: remSec,
-                        isPaused: char.is_paused,
-                        isDone: isDone
-                    });
+                    let remSec = 0; let isDone = false;
+                    if (char.is_paused) { remSec = t.saved_remaining_sec || 0; } 
+                    else { remSec = t.target_time - now; if (remSec <= 0) { remSec = 0; isDone = true; } }
+                    allMissions.push({ charName: char.char_display_name, charEmoji: char.emoji, charId: charId, missionId: t.id, itemName: t.item_name, remSec: remSec, isPaused: char.is_paused, isDone: isDone });
                 });
             }
 
-            allMissions.sort((a, b) => {
-                if (a.isDone && !b.isDone) return -1;
-                if (!a.isDone && b.isDone) return 1;
-                return a.remSec - b.remSec;
-            });
-
-            if (allMissions.length === 0) {
-                overviewContainer.innerHTML = '<p class="text-xs text-zinc-600 text-center py-4 pixel-font">NO ACTIVE MISSIONS AT ALL</p>';
-                return;
-            }
+            allMissions.sort((a, b) => { if (a.isDone && !b.isDone) return -1; if (!a.isDone && b.isDone) return 1; return a.remSec - b.remSec; });
+            if (allMissions.length === 0) { overviewContainer.innerHTML = '<p class="text-xs text-zinc-600 text-center py-4 pixel-font">NO ACTIVE MISSIONS AT ALL</p>'; return; }
 
             overviewContainer.innerHTML = allMissions.map(m => {
-                let displayTime = "";
-                if (m.isPaused) displayTime = 'PAUSED';
-                else if (m.isDone) displayTime = '[ SUCCESS ]';
-                else displayTime = formatTimeWithSeconds(m.remSec);
-                
+                let displayTime = m.isPaused ? 'PAUSED' : (m.isDone ? '[ SUCCESS ]' : formatTimeWithSeconds(m.remSec));
                 return `
-                <div class="p-2 border flex justify-between items-center gap-2 ${m.isDone ? 'bg-zinc-900/40 border-zinc-500' : 'bg-zinc-900/80 border-zinc-800'} transition-all">
+                <div onclick="openEditMissionModal('${m.charId}', '${m.missionId}', event)" class="p-2 border flex justify-between items-center gap-2 ${m.isDone ? 'bg-zinc-900/40 border-zinc-500' : 'bg-zinc-900/80 border-zinc-800'} hover:border-zinc-500 transition-all clickable">
                     <div class="flex items-center gap-2 truncate">
                         <span class="text-lg">${m.charEmoji}</span>
                         <div class="truncate">
@@ -1057,169 +894,80 @@
                     </div>
                     <div class="flex items-center gap-2 flex-shrink-0">
                         <span class="text-[9px] pixel-font font-mono ${m.isDone ? 'text-zinc-400 font-bold bg-zinc-800 border-zinc-600 animate-pulse' : (m.remSec <= 60 && !m.isPaused ? 'text-yellow-500 animate-pulse bg-black border-zinc-800' : 'text-zinc-300 bg-black border-zinc-800')} px-1.5 py-0.5 border">${displayTime}</span>
-                        <button onclick="deleteActivity('${m.charId}', '${m.missionId}')" class="text-zinc-500 font-bold text-xs px-1 hover:text-white transition-colors">✕</button>
+                        <button onclick="event.stopPropagation(); deleteActivity('${m.charId}', '${m.missionId}')" class="text-zinc-500 font-bold text-xs px-1 hover:text-white transition-colors">✕</button>
                     </div>
                 </div>`;
             }).join('');
         }
 
         async function quickResetFood(id) { 
-            const now = Date.now() / 1000;
-            const char = cachedCharacters[id];
-            let currentBrain = char.brain_base;
-            if(!char.is_paused) {
-                const elapsed = now - char.status_updated_at;
-                currentBrain = Math.min(100, currentBrain + (elapsed * BRAIN_GROW));
-            }
-            delete deathWarnedUnits[id];
-            removeBottomWarning(id); 
-            
-            await supabaseClient.from('afk_characters').update({
-                food_base: 100, 
-                brain_base: currentBrain,
-                status_updated_at: now
-            }).eq('id', id); 
+            const now = Date.now() / 1000; const char = cachedCharacters[id]; let currentBrain = char.brain_base;
+            if(!char.is_paused) { const elapsed = now - char.status_updated_at; currentBrain = Math.min(100, currentBrain + (elapsed * BRAIN_GROW)); }
+            delete deathWarnedUnits[id]; removeBottomWarning(id); 
+            await supabaseClient.from('afk_characters').update({ food_base: 100, brain_base: currentBrain, status_updated_at: now }).eq('id', id); 
             setTimeout(renderStructure, 300); 
         }
 
         async function quickResetBrain(id) { 
-            const now = Date.now() / 1000;
-            const char = cachedCharacters[id];
-            let currentFood = char.food_base;
-            if(!char.is_paused) {
-                const elapsed = now - char.status_updated_at;
-                currentFood = Math.max(0, currentFood - (elapsed * FOOD_DECAY));
-            }
-            await supabaseClient.from('afk_characters').update({
-                food_base: currentFood, 
-                brain_base: 0, 
-                status_updated_at: now
-            }).eq('id', id); 
+            const now = Date.now() / 1000; const char = cachedCharacters[id]; let currentFood = char.food_base;
+            if(!char.is_paused) { const elapsed = now - char.status_updated_at; currentFood = Math.max(0, currentFood - (elapsed * FOOD_DECAY)); }
+            await supabaseClient.from('afk_characters').update({ food_base: currentFood, brain_base: 0, status_updated_at: now }).eq('id', id); 
         }
 
         async function deleteActivity(charId, timerId) {
-            const char = cachedCharacters[charId];
-            if (!char) return;
+            const char = cachedCharacters[charId]; if (!char) return;
             const updatedTimers = char.timers.filter(t => t.id !== timerId);
-            const trackerKey = `${charId}_${timerId}`;
-            delete completedMissionsTracker[trackerKey];
+            delete completedMissionsTracker[`${charId}_${timerId}`];
             await supabaseClient.from('afk_characters').update({ timers: updatedTimers }).eq('id', charId);
         }
 
         async function submitAddCharacter() {
-            const name = document.getElementById('add_char_name').value.trim();
-            if(!name) return;
-            const newChar = {
-                id: "char_" + Date.now(),
-                char_display_name: name,
-                emoji: document.getElementById('add_char_emoji').value,
-                food_base: parseFloat(document.getElementById('add_food').value) || 100,
-                brain_base: parseFloat(document.getElementById('add_brain').value) || 0,
-                status_updated_at: Date.now() / 1000,
-                is_paused: false,
-                timers: []
-            };
-            await supabaseClient.from('afk_characters').insert([newChar]);
-            closeModal('addCharModal');
+            const name = document.getElementById('add_char_name').value.trim(); if(!name) return;
+            const newChar = { id: "char_" + Date.now(), char_display_name: name, emoji: document.getElementById('add_char_emoji').value, food_base: parseFloat(document.getElementById('add_food').value) || 100, brain_base: parseFloat(document.getElementById('add_brain').value) || 0, status_updated_at: Date.now() / 1000, is_paused: false, timers: [], laps: 0 };
+            await supabaseClient.from('afk_characters').insert([newChar]); closeModal('addCharModal');
         }
 
         async function togglePause(id) {
-            const char = cachedCharacters[id];
-            const now = Date.now() / 1000;
-            const updates = { is_paused: !char.is_paused, status_updated_at: now };
+            const char = cachedCharacters[id]; const now = Date.now() / 1000; const updates = { is_paused: !char.is_paused, status_updated_at: now };
             if(!char.is_paused) {
-                const elap = now - char.status_updated_at;
-                updates.food_base = Math.max(0, char.food_base - (elap * FOOD_DECAY));
-                updates.brain_base = Math.min(100, char.brain_base + (elap * BRAIN_GROW));
+                const elap = now - char.status_updated_at; updates.food_base = Math.max(0, char.food_base - (elap * FOOD_DECAY)); updates.brain_base = Math.min(100, char.brain_base + (elap * BRAIN_GROW));
                 char.timers.forEach(t => t.saved_remaining_sec = Math.max(0, t.target_time - now));
-            } else {
-                char.timers.forEach(t => t.target_time = now + (t.saved_remaining_sec || 0));
-                delete deathWarnedUnits[id];
-                removeBottomWarning(id);
-            }
-            updates.timers = char.timers;
-            await supabaseClient.from('afk_characters').update(updates).eq('id', id);
-            setTimeout(renderStructure, 100);
+            } else { char.timers.forEach(t => t.target_time = now + (t.saved_remaining_sec || 0)); delete deathWarnedUnits[id]; removeBottomWarning(id); }
+            updates.timers = char.timers; await supabaseClient.from('afk_characters').update(updates).eq('id', id); setTimeout(renderStructure, 100);
         }
 
-        async function deleteChar(id) { 
-            if(confirm("DELETE UNIT?")) {
-                await supabaseClient.from('afk_characters').delete().eq('id', id);
-            }
-        }
+        async function deleteChar(id) { if(confirm("DELETE UNIT?")) { await supabaseClient.from('afk_characters').delete().eq('id', id); } }
 
-        function openModal(m) { 
-            const modal = document.getElementById(m);
-            modal.classList.remove('hidden');
-            setTimeout(() => modal.style.opacity = "1", 10);
-        }
-        function closeModal(m) { 
-            const modal = document.getElementById(m);
-            modal.style.opacity = "0";
-            setTimeout(() => modal.classList.add('hidden'), 200);
-        }
+        function openModal(m) { const modal = document.getElementById(m); modal.classList.remove('hidden'); setTimeout(() => modal.style.opacity = "1", 10); }
+        function closeModal(m) { const modal = document.getElementById(m); modal.style.opacity = "0"; setTimeout(() => modal.classList.add('hidden'), 200); }
         
         function openEditModal(id) {
-            const char = cachedCharacters[id];
-            document.getElementById('edit_old_id').value = id;
-            document.getElementById('edit_char_name').value = char.char_display_name;
-            document.getElementById('edit_food').value = char.food_base.toFixed(1);
-            document.getElementById('edit_brain').value = char.brain_base.toFixed(1);
-            setEditEmoji(char.emoji);
-            openModal('editModal');
+            const char = cachedCharacters[id]; document.getElementById('edit_old_id').value = id; document.getElementById('edit_char_name').value = char.char_display_name;
+            document.getElementById('edit_food').value = char.food_base.toFixed(1); document.getElementById('edit_brain').value = char.brain_base.toFixed(1); setEditEmoji(char.emoji); openModal('editModal');
         }
 
         async function submitEditStatus() {
-            const id = document.getElementById('edit_old_id').value;
-            delete deathWarnedUnits[id];
-            removeBottomWarning(id);
-            await supabaseClient.from('afk_characters').update({
-                char_display_name: document.getElementById('edit_char_name').value,
-                food_base: parseFloat(document.getElementById('edit_food').value),
-                brain_base: parseFloat(document.getElementById('edit_brain').value),
-                emoji: document.getElementById('edit_char_emoji').value,
-                status_updated_at: Date.now() / 1000
-            }).eq('id', id);
+            const id = document.getElementById('edit_old_id').value; delete deathWarnedUnits[id]; removeBottomWarning(id);
+            await supabaseClient.from('afk_characters').update({ char_display_name: document.getElementById('edit_char_name').value, food_base: parseFloat(document.getElementById('edit_food').value), brain_base: parseFloat(document.getElementById('edit_brain').value), emoji: document.getElementById('edit_char_emoji').value, status_updated_at: Date.now() / 1000 }).eq('id', id);
             closeModal('editModal');
         }
 
         function openAFKModal(id) { document.getElementById('afk_char_name').value = id; openModal('afkModal'); }
         async function submitAFK() {
-            const id = document.getElementById('afk_char_name').value;
-            const task = document.getElementById('afk_task_name').value || "Working";
-            const mins = parseInt(document.getElementById('afk_minutes').value) || 30;
-            const now = Date.now() / 1000;
+            const id = document.getElementById('afk_char_name').value; const task = document.getElementById('afk_task_name').value || "Working"; const mins = parseInt(document.getElementById('afk_minutes').value) || 30; const now = Date.now() / 1000;
             const newTimer = { id: Math.random().toString(36).substr(2,9), item_name: task, target_time: now + (mins * 60) };
-            if(cachedCharacters[id].is_paused) newTimer.saved_remaining_sec = mins * 60;
-            cachedCharacters[id].timers.push(newTimer);
-            await supabaseClient.from('afk_characters').update({timers: cachedCharacters[id].timers}).eq('id', id);
-            closeModal('afkModal');
+            if(cachedCharacters[id].is_paused) newTimer.saved_remaining_sec = mins * 60; cachedCharacters[id].timers.push(newTimer);
+            await supabaseClient.from('afk_characters').update({timers: cachedCharacters[id].timers}).eq('id', id); closeModal('afkModal');
         }
 
         function buildEmojiPools() {
             ['add_emoji_pool', 'edit_emoji_pool'].forEach(pId => {
                 const pool = document.getElementById(pId);
-                pool.innerHTML = EMOJIS.map(e => `
-                    <button type="button" onclick="${pId.startsWith('add') ? 'setEmoji' : 'setEditEmoji'}('${e}', this)" 
-                            class="emoji-btn p-2 text-xl flex items-center justify-center clickable">
-                        ${e}
-                    </button>
-                `).join('');
+                pool.innerHTML = EMOJIS.map(e => `<button type="button" onclick="${pId.startsWith('add') ? 'setEmoji' : 'setEditEmoji'}('${e}', this)" class="emoji-btn p-2 text-xl flex items-center justify-center clickable">${e}</button>`).join('');
             });
         }
-        function setEmoji(e, btn) {
-            document.getElementById('add_char_emoji').value = e;
-            document.querySelectorAll('#add_emoji_pool .emoji-btn').forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
-        }
-        function setEditEmoji(e, btn) {
-            document.getElementById('edit_char_emoji').value = e;
-            document.querySelectorAll('#edit_emoji_pool .emoji-btn').forEach(b => {
-                b.classList.remove('selected');
-                if(b.innerText.trim() === e) b.classList.add('selected');
-            });
-            if(btn) btn.classList.add('selected');
-        }
+        function setEmoji(e, btn) { document.getElementById('add_char_emoji').value = e; document.querySelectorAll('#add_emoji_pool .emoji-btn').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); }
+        function setEditEmoji(e, btn) { document.getElementById('edit_char_emoji').value = e; document.querySelectorAll('#edit_emoji_pool .emoji-btn').forEach(b => { b.classList.remove('selected'); if(b.innerText.trim() === e) b.classList.add('selected'); }); if(btn) btn.classList.add('selected'); }
     </script>
 </body>
 </html>

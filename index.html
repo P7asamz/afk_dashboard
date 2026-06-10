@@ -601,7 +601,11 @@
             if(data) {
                 const localStars = getLocalStars();
                 data.forEach(d => {
-                    cachedCharacters[d.id] = { ...d, timers: d.timers || [], laps: d.laps || 0, is_starred: localStars[d.id] || false };
+                    // ดึงค่า Laps จาก LocalStorage (ถ้าไม่มีในเครื่อง ให้ดึงค่าเริ่มต้นของ Database มาใส่แทน)
+                    const savedLocalLaps = localStorage.getItem(`afk_laps_${d.id}`);
+                    const finalLaps = savedLocalLaps !== null ? parseInt(savedLocalLaps) : (d.laps || 0);
+
+                    cachedCharacters[d.id] = { ...d, timers: d.timers || [], laps: finalLaps, is_starred: localStars[d.id] || false };
                     if (expandedStates[d.id] === undefined) expandedStates[d.id] = true;
                     if (globalLapModes[d.id] === undefined) globalLapModes[d.id] = 'plus'; 
                 });
@@ -615,7 +619,12 @@
                     const localStars = getLocalStars(); const nextTimerIds = (payload.new.timers || []).map(t => t.id);
                     for (let key in completedMissionsTracker) { if (key.startsWith(payload.new.id + "_")) { const tId = key.split('_')[1]; if (!nextTimerIds.includes(tId)) delete completedMissionsTracker[key]; } }
                     if (cachedCharacters[payload.new.id] && payload.new.food_base > cachedCharacters[payload.new.id].food_base) { delete deathWarnedUnits[payload.new.id]; removeBottomWarning(payload.new.id); }
-                    cachedCharacters[payload.new.id] = { ...payload.new, timers: payload.new.timers || [], laps: payload.new.laps || 0, is_starred: localStars[payload.new.id] || false };
+                    
+                    // ป้องกันการทับซ้อนของข้อมูล Realtime สำหรับตัวแปร Laps ฝั่ง Local
+                    const savedLocalLaps = localStorage.getItem(`afk_laps_${payload.new.id}`);
+                    const finalLaps = savedLocalLaps !== null ? parseInt(savedLocalLaps) : (payload.new.laps || 0);
+
+                    cachedCharacters[payload.new.id] = { ...payload.new, timers: payload.new.timers || [], laps: finalLaps, is_starred: localStars[payload.new.id] || false };
                 }
                 renderStructure(); updateMasterPopupDOM();
             }).subscribe();
@@ -648,6 +657,10 @@
             if(nextLaps < 0) nextLaps = 0;
 
             cachedCharacters[id].laps = nextLaps;
+            
+            // บันทึกค่าวัด Laps ลงหน่วยความจำ LocalStorage ประจำเบราว์เซอร์
+            localStorage.setItem(`afk_laps_${id}`, nextLaps);
+
             const el = document.getElementById(`lap_val_${id}`);
             if(el) el.innerText = nextLaps;
 
@@ -936,7 +949,13 @@
             updates.timers = char.timers; await supabaseClient.from('afk_characters').update(updates).eq('id', id); setTimeout(renderStructure, 100);
         }
 
-        async function deleteChar(id) { if(confirm("DELETE UNIT?")) { await supabaseClient.from('afk_characters').delete().eq('id', id); } }
+        async function deleteChar(id) { 
+            if(confirm("DELETE UNIT?")) { 
+                // ลบประวัติ Laps ของบอทตัวนี้ที่บันทึกอยู่ในเครื่องออกด้วยเพื่อไม่ให้รก LocalStorage
+                localStorage.removeItem(`afk_laps_${id}`);
+                await supabaseClient.from('afk_characters').delete().eq('id', id); 
+            } 
+        }
 
         function openModal(m) { const modal = document.getElementById(m); modal.classList.remove('hidden'); setTimeout(() => modal.style.opacity = "1", 10); }
         function closeModal(m) { const modal = document.getElementById(m); modal.style.opacity = "0"; setTimeout(() => modal.classList.add('hidden'), 200); }
